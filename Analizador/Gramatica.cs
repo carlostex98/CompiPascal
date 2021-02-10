@@ -18,7 +18,9 @@ namespace CompiPascal.Analizador
         {
             
             #region ER
-            var NUMERO = new NumberLiteral("Numero");
+            var numero = new NumberLiteral("Numero");
+            var id = new IdentifierTerminal("Identificador");
+            var cadena = new StringLiteral("Cadena");
             #endregion
 
             #region Terminales
