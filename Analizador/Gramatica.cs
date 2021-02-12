@@ -82,6 +82,49 @@ namespace CompiPascal.Analizador
 
             #endregion
 
+            #region no-terminales
+            NonTerminal asignacion = new NonTerminal("asignacion");
+            NonTerminal instrucciones = new NonTerminal("instrucciones");
+            NonTerminal parametros = new NonTerminal("parametros");
+            NonTerminal print_parametros = new NonTerminal("print_parametros");
+            NonTerminal parametros_llamada = new NonTerminal("parametros_llamada");
+            NonTerminal if_then = new NonTerminal("if_then");
+            NonTerminal funcion = new NonTerminal("funcion");
+            NonTerminal procedimiento = new NonTerminal("procedimiento");
+            NonTerminal function_call = new NonTerminal("function_call");
+            NonTerminal cases = new NonTerminal("cases");
+            NonTerminal while_do = new NonTerminal("while_do");
+            NonTerminal repeat_until = new NonTerminal("repeat_until");
+            NonTerminal for_do = new NonTerminal("for_do");
+            NonTerminal var_param = new NonTerminal("var_param");
+            NonTerminal expresion = new NonTerminal("expresion");
+            NonTerminal valor = new NonTerminal("valor");
+            NonTerminal declaracion = new NonTerminal("declaracion");
+            #endregion
+
+
+            #region reglas 
+
+            expresion.Rule
+                = valor + mas + valor
+                | valor + menos + valor
+                | valor + por + valor
+                | valor + dividir + valor
+                | valor + modulo + valor
+                | valor
+                ;
+
+            valor.Rule
+                = numero
+                | function_call
+                | identificador
+                | cadena
+                | pizq + expresion + pder
+                ;
+
+            asignacion.Rule = identificador + dpunto + igual + expresion;
+
+            #endregion
 
 
 
@@ -89,6 +132,7 @@ namespace CompiPascal.Analizador
             NonGrammarTerminals.Add(comentario_uno);
             NonGrammarTerminals.Add(comentario_multi);
             NonGrammarTerminals.Add(comentario_multi_);
+            this.Root = instrucciones;
             #endregion
 
 
