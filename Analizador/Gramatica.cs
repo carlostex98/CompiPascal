@@ -76,6 +76,9 @@ namespace CompiPascal.Analizador
             var boolean_ = ToTerm("boolean");
             var real_ = ToTerm("real");
 
+            var and_ = ToTerm("and");
+            var or_ = ToTerm("or");
+
 
             RegisterOperators(1, mas, menos);
             RegisterOperators(2, por, dividir);
@@ -96,14 +99,84 @@ namespace CompiPascal.Analizador
             NonTerminal while_do = new NonTerminal("while_do");
             NonTerminal repeat_until = new NonTerminal("repeat_until");
             NonTerminal for_do = new NonTerminal("for_do");
-            NonTerminal var_param = new NonTerminal("var_param");
+            NonTerminal var_param = new NonTerminal("var_param"); //pendiente
             NonTerminal expresion = new NonTerminal("expresion");
             NonTerminal valor = new NonTerminal("valor");
             NonTerminal declaracion = new NonTerminal("declaracion");
+            NonTerminal main_ = new NonTerminal("main");
+            NonTerminal programa = new NonTerminal("programa");
+            NonTerminal instr_normal = new NonTerminal("instr_normal");
+            NonTerminal print_ = new NonTerminal("print");
+            NonTerminal type_var = new NonTerminal("type_var");
+            NonTerminal list_vp = new NonTerminal("list_vp");
+            
+
+            //NonTerminal  = new NonTerminal("");
             #endregion
 
 
             #region reglas 
+
+            instrucciones.Rule 
+                = funcion
+                | programa
+                | declaracion
+                | procedimiento
+                | main_
+                ;
+
+            programa.Rule = program_ + identificador;
+
+            procedimiento.Rule
+                = procedure_ + identificador + pizq + pder + begin_ + instr_normal + end_ + ptcoma
+                | procedure_ + identificador + pizq + parametros + pder + begin_ + instr_normal + end_ + ptcoma
+                ;
+
+            funcion.Rule
+                = function_ + identificador + pizq + pder + begin_ + instr_normal + end_ + ptcoma
+                | function_ + identificador + pizq + parametros + pder + begin_ + instr_normal + end_ + ptcoma
+                ;
+
+            parametros.Rule
+                = list_vp + dpunto + type_var + ptcoma + parametros
+                | list_vp + dpunto + type_var
+                ;
+
+            list_vp.Rule
+                = identificador + coma + list_vp
+                | identificador
+                ;
+
+            type_var.Rule
+                = string_
+                | integer_
+                | boolean_
+                | real_
+                ;
+
+
+            main_.Rule = begin_ + instr_normal + end_ + ptcoma;
+
+            instr_normal.Rule
+                = if_then
+                | cases
+                | function_call
+                | while_do
+                | repeat_until
+                | for_do
+                | print_
+                ;
+
+            print_.Rule = writeln_ + pizq + print_parametros + pder + ptcoma;
+
+            print_parametros.Rule 
+                = expresion + print_parametros
+                | expresion
+                ;
+
+            if_then.Rule = if_ + pizq + expresion + pder + instr_normal;
+
+
 
             expresion.Rule
                 = valor + mas + valor
@@ -111,6 +184,9 @@ namespace CompiPascal.Analizador
                 | valor + por + valor
                 | valor + dividir + valor
                 | valor + modulo + valor
+                | valor + and_ + valor
+                | valor + or_ + valor
+                | negacion + valor 
                 | valor
                 ;
 
@@ -123,6 +199,20 @@ namespace CompiPascal.Analizador
                 ;
 
             asignacion.Rule = identificador + dpunto + igual + expresion;
+
+            function_call.Rule 
+                = identificador + pizq + pder
+                | identificador + pizq + parametros_llamada+ pder
+                ;
+
+            parametros_llamada.Rule
+                = expresion + coma + parametros_llamada
+                | expresion
+                ;
+
+
+
+
 
             #endregion
 
