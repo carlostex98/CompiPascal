@@ -61,6 +61,7 @@ namespace CompiPascal.Analizador
             var begin_ = ToTerm("begin");
             var program_ = ToTerm("program");
             var var_ = ToTerm("var");
+            var const_ = ToTerm("const");
             var end_ = ToTerm("end");
             var function_ = ToTerm("function");
             var procedure_ = ToTerm("procedure");
@@ -68,6 +69,16 @@ namespace CompiPascal.Analizador
             var else_ = ToTerm("else");
             var if_ = ToTerm("if");
             var writeln_ = ToTerm("writeln");
+            var while_ = ToTerm("while");
+            var do_ = ToTerm("do");
+            
+            var case_ = ToTerm("case");
+            var of_ = ToTerm("of");
+
+            var to_ = ToTerm("to");
+
+            var repeat_ = ToTerm("repeat");
+            var until_ = ToTerm("until");
 
             var exit_ = ToTerm("Exit");
 
@@ -75,6 +86,7 @@ namespace CompiPascal.Analizador
             var string_ = ToTerm("string");
             var boolean_ = ToTerm("boolean");
             var real_ = ToTerm("real");
+
 
             var and_ = ToTerm("and");
             var or_ = ToTerm("or");
@@ -109,7 +121,12 @@ namespace CompiPascal.Analizador
             NonTerminal print_ = new NonTerminal("print");
             NonTerminal type_var = new NonTerminal("type_var");
             NonTerminal list_vp = new NonTerminal("list_vp");
-            
+            NonTerminal lista_instr = new NonTerminal("lista_instr");
+            NonTerminal bloque_inst = new NonTerminal("bloque_inst");
+            NonTerminal casos_lista = new NonTerminal("casos_lista");
+
+            NonTerminal super_instr = new NonTerminal("super_instr");
+
 
             //NonTerminal  = new NonTerminal("");
             #endregion
@@ -117,8 +134,13 @@ namespace CompiPascal.Analizador
 
             #region reglas 
 
+            super_instr.Rule
+                = instrucciones + super_instr
+                | instrucciones
+                ; 
+
             instrucciones.Rule 
-                = funcion
+                = funcion 
                 | programa
                 | declaracion
                 | procedimiento
@@ -128,13 +150,13 @@ namespace CompiPascal.Analizador
             programa.Rule = program_ + identificador;
 
             procedimiento.Rule
-                = procedure_ + identificador + pizq + pder + begin_ + instr_normal + end_ + ptcoma
-                | procedure_ + identificador + pizq + parametros + pder + begin_ + instr_normal + end_ + ptcoma
+                = procedure_ + identificador + pizq + pder + begin_ + lista_instr + end_ + ptcoma
+                | procedure_ + identificador + pizq + parametros + pder + begin_ + lista_instr + end_ + ptcoma
                 ;
 
             funcion.Rule
-                = function_ + identificador + pizq + pder + begin_ + instr_normal + end_ + ptcoma
-                | function_ + identificador + pizq + parametros + pder + begin_ + instr_normal + end_ + ptcoma
+                = function_ + identificador + pizq + pder + begin_ + lista_instr + end_ + ptcoma
+                | function_ + identificador + pizq + parametros + pder + begin_ + lista_instr + end_ + ptcoma
                 ;
 
             parametros.Rule
@@ -155,7 +177,16 @@ namespace CompiPascal.Analizador
                 ;
 
 
-            main_.Rule = begin_ + instr_normal + end_ + ptcoma;
+            declaracion.Rule
+                = var_ + list_vp + dpunto + type_var + ptcoma
+                | var_ + list_vp + dpunto + type_var + igual + declaracion + ptcoma
+                | const_ + identificador + dpunto + type_var + igual + declaracion + ptcoma
+                ;
+
+
+            main_.Rule = begin_ + lista_instr + end_ + ptcoma;
+
+
 
             instr_normal.Rule
                 = if_then
@@ -167,6 +198,13 @@ namespace CompiPascal.Analizador
                 | print_
                 ;
 
+            lista_instr.Rule 
+                = instr_normal + ptcoma + lista_instr
+                | instr_normal + ptcoma
+                ;
+
+
+
             print_.Rule = writeln_ + pizq + print_parametros + pder + ptcoma;
 
             print_parametros.Rule 
@@ -174,7 +212,35 @@ namespace CompiPascal.Analizador
                 | expresion
                 ;
 
-            if_then.Rule = if_ + pizq + expresion + pder + instr_normal;
+            bloque_inst.Rule
+                = begin_ + lista_instr + end_
+                | instr_normal
+                ;
+
+            if_then.Rule
+                = if_ + expresion + then_ + bloque_inst
+                | if_ + expresion + then_ + bloque_inst + else_ + bloque_inst
+                ;
+
+            cases.Rule
+                = case_ + expresion + of_ + casos_lista + end_ + ptcoma
+                | case_ + expresion + of_ + casos_lista + else_ + lista_instr + end_ + ptcoma
+                ;
+
+            casos_lista.Rule = expresion + dpunto + lista_instr + casos_lista;
+
+            while_do.Rule
+                = while_ + expresion + do_ + begin_ + lista_instr + end_ + ptcoma;
+                ;
+
+            repeat_until.Rule 
+                = repeat_ + lista_instr + until_ + expresion + ptcoma
+                ;
+
+            for_do.Rule
+                = identificador + dpunto + igual + expresion + to_ + expresion + instr_normal
+                | identificador + dpunto + igual + expresion + to_ + begin_ +  lista_instr + end_ + ptcoma
+                ;
 
 
 
@@ -209,11 +275,6 @@ namespace CompiPascal.Analizador
                 = expresion + coma + parametros_llamada
                 | expresion
                 ;
-
-
-
-
-
             #endregion
 
 
@@ -222,7 +283,7 @@ namespace CompiPascal.Analizador
             NonGrammarTerminals.Add(comentario_uno);
             NonGrammarTerminals.Add(comentario_multi);
             NonGrammarTerminals.Add(comentario_multi_);
-            this.Root = instrucciones;
+            this.Root = super_instr;
             #endregion
 
 
