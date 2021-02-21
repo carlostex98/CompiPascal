@@ -9,7 +9,10 @@ namespace CompiPascal.SuperClass
         public enum Tipo
         {
             INTEGER,
-            BOOLEAN
+            BOOLEAN,
+            STRING,
+            REAL,
+            ARRAY
         }
 
         public Tipo tipo;

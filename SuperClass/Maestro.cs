@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using CompiPascal.Analizador;
+using CompiPascal.Instrucciones;
+using Irony.Parsing;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace CompiPascal.SuperClass
 {
@@ -142,6 +146,36 @@ namespace CompiPascal.SuperClass
             {
                 tmp.ejecutar(); //al ejecutarlas, las agregamos a la lista de funciones :)
             }
+        }
+
+        private void getDot(ParseTreeNode raiz)
+        {
+            grafo = "digraph G {";
+            grafo += "nodo0[label=\"" + raiz.ToString() + "\"];\n";
+            contador = 1;
+            recorrerAST("nodo0", raiz);
+            grafo += "}";
+        }
+
+        private void recorrerAST(String padre, ParseTreeNode hijos)
+        {
+            foreach (ParseTreeNode hijo in hijos.ChildNodes)
+            {
+                string nombreHijo = "nodo" + contador.ToString();
+                grafo += nombreHijo + "[label=\"" + hijo.ToString() + "\"];\n";
+                grafo += padre + "->" + nombreHijo + ";\n";
+                contador++;
+                recorrerAST(nombreHijo, hijo);
+            }
+        }
+
+        public async Task generarImagen(ParseTreeNode raiz)
+        {
+            this.getDot(raiz);
+            //DOT dot = new DOT();
+            //BinaryImage img = dot.ToPNG(this.grafo);
+            //img.Save("C:\\compiladores2\\AST.png");
+            await File.WriteAllTextAsync("C:\\compiladores2\\AST.txt", this.grafo);
         }
 
 
