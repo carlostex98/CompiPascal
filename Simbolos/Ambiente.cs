@@ -23,7 +23,7 @@ namespace CompiPascal.Simbolos
 
         public void setVar()
         {
-
+            //cool
         }
 
 
