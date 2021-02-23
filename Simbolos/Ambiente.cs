@@ -16,14 +16,22 @@ namespace CompiPascal.Simbolos
             this.anterior = recibido;
         }
 
-        public void getVar()
+        public Objeto getVar(string id)
         {
+            Objeto res;
 
+            if (variables.TryGetValue(id, out res))
+            {
+                return res;
+            }
+
+            return null; //valida en llamada 
         }
 
-        public void setVar()
+        public void setVar(string id, Objeto obj)
         {
             //cool
+            variables.Add(id, obj);
         }
 
 

@@ -21,7 +21,7 @@ namespace CompiPascal.Analizador
 
             if (raiz_grogram == null)
             {
-
+                //indica error
             }
             else
             {
