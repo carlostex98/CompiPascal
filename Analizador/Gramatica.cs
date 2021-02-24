@@ -127,12 +127,16 @@ namespace CompiPascal.Analizador
 
             NonTerminal super_instr = new NonTerminal("super_instr");
 
+            NonTerminal inicio = new NonTerminal("inicio");
+
 
             //NonTerminal  = new NonTerminal("");
             #endregion
 
 
             #region reglas 
+
+            inicio.Rule = super_instr;
 
             super_instr.Rule
                 = instrucciones + super_instr
@@ -283,7 +287,7 @@ namespace CompiPascal.Analizador
             NonGrammarTerminals.Add(comentario_uno);
             NonGrammarTerminals.Add(comentario_multi);
             NonGrammarTerminals.Add(comentario_multi_);
-            this.Root = super_instr;
+            this.Root = inicio;
             #endregion
 
 

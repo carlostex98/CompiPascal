@@ -9,7 +9,7 @@ namespace CompiPascal.Analizador
     {
         public enum tipos
         {
-            Lexico, Sintactico, Semantico
+            LEXICO, SINTACTICO, SEMANTICO
         }
 
         private int linea, columna;
