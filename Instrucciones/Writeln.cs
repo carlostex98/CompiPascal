@@ -1,34 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using CompiPascal.SuperClass;
+using CompiPascal.General;
+using CompiPascal.TablaSimbolos;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CompiPascal.Instrucciones
 {
-    public class Writeln:Funcion
+    class Writeln: Instruccion
     {
-        public Writeln(int fila, int columna) : base(new LinkedList<object>(), "writeln", fila, columna)
-        {
-        }
 
-        /*Esta función abstracta es para la declaración de la función. La hago como que si se tratara de una instrucción más. 
-         * **/
-        public override Objeto ejecutar()
+        private Instruccion contenido;
+
+        public Writeln(Instruccion c)
         {
-            // aqui agrego la función a la lista de funciones de la singleton
-            bool res = Maestro.Instance.addFunction(this);
-            /*
+            this.contenido = c;
             
-            ... agregar validaciones
-
-             */
-            return null;
-
         }
 
-        public override Objeto ejecutarFuncion(LinkedList<Objeto> parametros_actuales)
+        public Object ejecutar(TSimbolo ts)
         {
-            Maestro.Instance.addOutput(parametros_actuales.First.Value.getValue().ToString());
+
+            string e = contenido.ejecutar(ts).ToString();
+            Maestro.Instance.addOutput(e);
             return null;
         }
 
