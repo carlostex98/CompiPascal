@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Irony.Ast;
 using Irony.Parsing;
+using CompiPascal.General;
 
 
 namespace CompiPascal.Analizador
