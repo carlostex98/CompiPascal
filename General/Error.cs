@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CompiPascal.General
 {
-    class Error
+    public class Error
     {
         public enum Tipo_error
         {

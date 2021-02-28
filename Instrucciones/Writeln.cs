@@ -16,12 +16,10 @@ namespace CompiPascal.Instrucciones
         public Writeln(Instruccion c)
         {
             this.contenido = c;
-            
         }
 
         public Object ejecutar(TSimbolo ts)
         {
-
             string e = contenido.ejecutar(ts).ToString();
             Maestro.Instance.addOutput(e);
             return null;

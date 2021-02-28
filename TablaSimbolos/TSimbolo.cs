@@ -9,7 +9,7 @@ namespace CompiPascal.TablaSimbolos
         public TSimbolo heredado;
         public Dictionary<string, Simbolo> variables = new Dictionary<string, Simbolo>();
 
-        public TSimbolo(TSimbolo ts)
+        public TSimbolo(TSimbolo ts = null)
         {
             this.heredado = ts;
         }
