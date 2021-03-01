@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using CompiPascal.Instrucciones;
 using CompiPascal.TablaSimbolos;
+using CompiPascal.General;
 
 
 namespace CompiPascal.Instrucciones
@@ -20,7 +20,9 @@ namespace CompiPascal.Instrucciones
 
         public Object ejecutar(TSimbolo ts) 
         {
-            while ((Boolean)condicion.ejecutar(ts))
+            Primitivo condres = (Primitivo)condicion.ejecutar(ts);
+
+            while ((Boolean)(condres.valor))
             {
                 TSimbolo tablaLocal = new TSimbolo(ts);//le pasamos los valores actuales a la copia de tabla de simbolos
                 

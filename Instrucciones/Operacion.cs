@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using CompiPascal.General;
 using CompiPascal.TablaSimbolos;
+
 
 namespace CompiPascal.Instrucciones
 {
@@ -26,15 +28,17 @@ namespace CompiPascal.Instrucciones
             DECREMENTO,
             MAYOR_I,
             MENOR_I,
-            NEGACION
+            NEGACION,
+            PRIMITIVO
         }
 
         private Tipo_operacion tipo;
         private Operacion operadorIzq;
         private Operacion operadorDer;
-        private Object valor;
-
-        // suma, resta, multiplicacion, division, concat, mayor, menor, or, and
+        private Object valor; //pendiente eliminar
+        private Primitivo val;
+       
+        // maneja todas
         public Operacion(Operacion operadorIzq, Operacion operadorDer, Tipo_operacion tipo)
         {
             this.tipo = tipo;
@@ -42,103 +46,79 @@ namespace CompiPascal.Instrucciones
             this.operadorDer = operadorDer;
         }
 
-        //++,--,-val, not
-        public Operacion(Operacion operadorIzq, Tipo_operacion tipo)
+        //solo es un valor
+        public Operacion(Primitivo prim)
         {
-            this.tipo = tipo;
-            this.operadorIzq = operadorIzq;
+            this.tipo = Tipo_operacion.PRIMITIVO;
+            this.val = prim;
         }
 
 
-        //id, cadena
-        public Operacion(String a, Tipo_operacion tipo)
-        {
-            this.valor = a;
-            this.tipo = tipo;
-        }
-
-        //int, decimal
-        public Operacion(Double a)
-        {
-            this.valor = a;
-            this.tipo = Tipo_operacion.NUMERO;
-        }
-
+        //retorna simbolo
 
         public Object ejecutar(TSimbolo ts)
         {
+            Object der = operadorIzq.ejecutar(ts);
+            Object izq = operadorDer.ejecutar(ts);
+
+            Primitivo a = (Primitivo)izq;
+            Primitivo b = (Primitivo)der;
+
             if (tipo == Tipo_operacion.DIVISION)
-            {
-                return (Double)operadorIzq.ejecutar(ts) / (Double)operadorDer.ejecutar(ts);
+            {   
+                return new Primitivo(Primitivo.tipo_val.INT, (object)((Double)a.valor / (Double)b.valor));
             }
             else if (tipo == Tipo_operacion.MULTIPLICACION)
             {
-                return (Double)operadorIzq.ejecutar(ts) * (Double)operadorDer.ejecutar(ts);
+                return new Primitivo(Primitivo.tipo_val.INT, (object)((Double)a.valor * (Double)b.valor));
             }
             else if (tipo == Tipo_operacion.RESTA)
             {
-                return (Double)operadorIzq.ejecutar(ts) - (Double)operadorDer.ejecutar(ts);
+                return new Primitivo(Primitivo.tipo_val.INT, (object)((Double)a.valor - (Double)b.valor));
             }
             else if (tipo == Tipo_operacion.SUMA)
             {
-                return (Double)operadorIzq.ejecutar(ts) + (Double)operadorDer.ejecutar(ts);
+                return new Primitivo(Primitivo.tipo_val.INT, (object)((Double)a.valor + (Double)b.valor));
             }
             else if (tipo == Tipo_operacion.NEGATIVO)
             {
-                return (Double)operadorIzq.ejecutar(ts) * -1;
+                return new Primitivo(Primitivo.tipo_val.INT, (object)((Double)a.valor / (Double)(-1))); //pendiente
             }
             else if (tipo == Tipo_operacion.NEGACION)
             {
-                return !(Boolean)operadorIzq.ejecutar(ts) ;
-            }
-            else if (tipo == Tipo_operacion.NUMERO)
-            {
-                return Double.Parse(valor.ToString());
-            }
-            else if (tipo == Tipo_operacion.IDENTIFICADOR)
-            {
-                //return ts.getValor(valor.ToString());
-                return ts.obtener(valor.ToString());
-            }
-            else if (tipo == Tipo_operacion.CADENA)
-            {
-                return valor.ToString();
+                return !(Boolean)operadorIzq.ejecutar(ts) ; //pendiente
             }
             else if (tipo == Tipo_operacion.MAYOR_QUE)
             {
-                return ((Double)operadorIzq.ejecutar(ts)) > ((Double)operadorDer.ejecutar(ts));
+                return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)((Double)a.valor > (Double)(b.valor)));
             }
             else if (tipo == Tipo_operacion.MENOR_QUE)
             {
-                return ((Double)operadorIzq.ejecutar(ts)) < ((Double)operadorDer.ejecutar(ts));
+                return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)((Double)a.valor < (Double)(b.valor)));
             }
             else if (tipo == Tipo_operacion.MAYOR_I)
             {
-                return ((Double)operadorIzq.ejecutar(ts)) >= ((Double)operadorDer.ejecutar(ts));
+                return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)((Double)a.valor >= (Double)(b.valor)));
             }
             else if (tipo == Tipo_operacion.MENOR_I)
             {
-                return ((Double)operadorIzq.ejecutar(ts)) <= ((Double)operadorDer.ejecutar(ts));
+                return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)((Double)a.valor <= (Double)(b.valor)));
             }
             else if (tipo == Tipo_operacion.CONCATENACION)
             {
-                return operadorIzq.ejecutar(ts).ToString() + operadorDer.ejecutar(ts).ToString();
+                return new Primitivo(Primitivo.tipo_val.CADENA, (object)((String)a.valor + (String)(b.valor)));
             }
             else if (tipo == Tipo_operacion.OO)
             {
-                return ((Boolean)operadorIzq.ejecutar(ts)) || ((Boolean)operadorDer.ejecutar(ts));
+                return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)((Boolean)a.valor || (Boolean)(b.valor)));
             }
             else if (tipo == Tipo_operacion.YY)
             {
-                return ((Boolean)operadorIzq.ejecutar(ts)) && ((Boolean)operadorDer.ejecutar(ts));
+                return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)((Boolean)a.valor && (Boolean)(b.valor)));
             }
-            else if (tipo == Tipo_operacion.AUMENTO)
+            else if (tipo == Tipo_operacion.PRIMITIVO)
             {
-                return (Double)operadorIzq.ejecutar(ts) + 1;
-            }
-            else if (tipo == Tipo_operacion.DECREMENTO)
-            {
-                return (Double)operadorIzq.ejecutar(ts) - 1;
+                return this.val; // si es el minimo valor
             }
             else
             {

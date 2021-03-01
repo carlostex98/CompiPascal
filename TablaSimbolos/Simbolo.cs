@@ -1,27 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using CompiPascal.General;
+
 
 namespace CompiPascal.TablaSimbolos
 {
     public class Simbolo
     {
-        public enum Tipo
-        {
-            STRING,
-            BOOLEAN,
-            ARRAY, 
-            TYPE
-        }
-
-        private Tipo tipo;
+        
         private String id;
-        private Object valor;
+        private Primitivo valor;
 
 
-        public Simbolo(String id, Tipo tipo)
+        public Simbolo(String id, Primitivo v)
         {
-            this.tipo = tipo;
+            this.valor = v;
             this.id = id;
         }
         public String getId()
@@ -29,14 +23,14 @@ namespace CompiPascal.TablaSimbolos
             return id;
         }
 
-        public Object getValor()
+        public Primitivo getValor()
         {
             return valor;
         }
 
         public void setValor(Object v)
         {
-            valor = v;
+            //valor = v;
         }
 
     }
