@@ -36,6 +36,23 @@ namespace CompiPascal.TablaSimbolos
                 this.variables.TryGetValue(nombre, out obj);
                 return obj;
             }
+            else
+            {
+                //recorremos los demas contextos
+                TSimbolo aux = this.heredado;
+                while (aux != null)
+                {
+                    if (aux.variables.ContainsKey(nombre))
+                    {
+                        Simbolo obj;
+                        aux.variables.TryGetValue(nombre, out obj);
+                        return obj;
+                    }
+                    aux = aux.heredado;
+                }
+
+
+            }
             return null; //variable no existente en el contexto
         }
 

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Irony.Ast;
 using Irony.Parsing;
 using CompiPascal.General;
+using CompiPascal.Instrucciones;
+using CompiPascal.TablaSimbolos;
 
 
 namespace CompiPascal.Analizador
@@ -16,6 +18,8 @@ namespace CompiPascal.Analizador
         public Evaluador() { }
         private string grafo = "";   //aqui voy a ir guardando todo el codigo en dot
         private int contador = 0;
+        LinkedList<Instruccion> instrucciones_globales = new LinkedList<Instruccion>();
+        
 
         public void analizar_arbol(String entrada)
         {
@@ -42,6 +46,10 @@ namespace CompiPascal.Analizador
                 //mandamos a llamar a los metodos de instrucciones
                 //Maestro.Instance.addMessage("Todo correcto");
                 _ = this.generarImagen(raiz_grogram); //se usa el simbolo de descarte
+
+                TSimbolo global = new TSimbolo(null);
+                //mandar a llamar ejecutar con try catch
+
             }
 
         }
@@ -76,21 +84,25 @@ namespace CompiPascal.Analizador
             await File.WriteAllTextAsync("C:\\compiladores2\\AST.txt", this.grafo);
         }
 
+
+        //metodo maestro
         public void evaluarInstrucciones(ParseTreeNode ps)
         {
             if (ps.ChildNodes.Count == 2)
             {
-                evaluarInstruccion(ps.ChildNodes[0]);
-                evaluarInstrucciones(ps.ChildNodes[0]);
+                this.instrucciones_globales.AddLast(evaluarInstruccion(ps.ChildNodes[0]));
+                evaluarInstrucciones(ps.ChildNodes[1]);
             }
             else 
             {
-                evaluarInstruccion(ps.ChildNodes[0]);
+                //hace push de la isntruccion
+                this.instrucciones_globales.AddLast(evaluarInstruccion(ps.ChildNodes[0]));
+
             }
         }
 
 
-        public void evaluarInstruccion(ParseTreeNode ps)
+        public Instruccion evaluarInstruccion(ParseTreeNode ps)
         {
             //aca se leeee
             switch (ps.ChildNodes[0].Term.Name)
@@ -110,10 +122,54 @@ namespace CompiPascal.Analizador
                     // 
                     break;
                 case "main_":
-                    //
-                    break;
+                    //                      main           listaInstr    
+                    ParseTreeNode auxx = ps.ChildNodes[0].ChildNodes[1];
+                    return new MainProgram(null);
             }
+
+            return null;
         }
+
+        public LinkedList<Instruccion> evaluar_general(ParseTreeNode ps)
+        {
+            //recibimos lista instr
+
+            if (ps.ChildNodes.Count == 3)
+            {
+                //multiples
+                LinkedList<Instruccion> temporal = new LinkedList<Instruccion>();
+                temporal.AddLast(unitaria(ps.ChildNodes[0]));
+
+                LinkedList<Instruccion> t1 = new LinkedList<Instruccion>(evaluar_general(ps.ChildNodes[2]));
+                foreach(Instruccion item in t1)
+                {
+                    temporal.AddLast(item);
+                }
+                return temporal;
+            }
+            else
+            {
+                //instruccion unitaria
+                LinkedList<Instruccion> temporal = new LinkedList<Instruccion>();
+                temporal.AddLast(unitaria(ps.ChildNodes[0]));
+                return temporal;
+            }
+
+            //return null;
+        }
+
+        public Instruccion unitaria(ParseTreeNode ps)
+        {
+            //recibo instr normal
+            ParseTreeNode aux = ps.ChildNodes[0];
+            if (aux.Term.Name == "print_")
+            {
+                //write ln
+            }
+
+            return null;
+        }
+
 
         public void evalFuncion()
         {

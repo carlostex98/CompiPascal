@@ -58,8 +58,24 @@ namespace CompiPascal.Instrucciones
 
         public Object ejecutar(TSimbolo ts)
         {
-            Object der = operadorIzq.ejecutar(ts);
-            Object izq = operadorDer.ejecutar(ts);
+            //relizar validacion de tipos
+            
+
+            Object der = new Object();
+            Object izq = new Object();
+
+
+            if (tipo == Tipo_operacion.NEGATIVO || tipo == Tipo_operacion.NEGACION)
+            {
+                //solo nos interesa el izquierdo
+                izq = operadorDer.ejecutar(ts);
+                der = null;
+            }
+            else
+            {
+                der = operadorIzq.ejecutar(ts);
+                izq = operadorDer.ejecutar(ts);
+            }
 
             Primitivo a = (Primitivo)izq;
             Primitivo b = (Primitivo)der;
@@ -78,15 +94,24 @@ namespace CompiPascal.Instrucciones
             }
             else if (tipo == Tipo_operacion.SUMA)
             {
-                return new Primitivo(Primitivo.tipo_val.INT, (object)((Double)a.valor + (Double)b.valor));
+                //si los dos son string hace la concatenacion
+                if (a.t_val == Primitivo.tipo_val.CADENA && a.t_val == Primitivo.tipo_val.CADENA)
+                {
+                    return new Primitivo(Primitivo.tipo_val.CADENA, (object)((String)a.valor + (String)(b.valor)));
+                }
+                else
+                {
+                    return new Primitivo(Primitivo.tipo_val.INT, (object)((Double)a.valor + (Double)b.valor));
+                }
+
             }
             else if (tipo == Tipo_operacion.NEGATIVO)
             {
-                return new Primitivo(Primitivo.tipo_val.INT, (object)((Double)a.valor / (Double)(-1))); //pendiente
+                return new Primitivo(Primitivo.tipo_val.INT, (object)((Double)a.valor * (Double)(-1)));
             }
             else if (tipo == Tipo_operacion.NEGACION)
             {
-                return !(Boolean)operadorIzq.ejecutar(ts) ; //pendiente
+                return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)!((Boolean)a.valor));
             }
             else if (tipo == Tipo_operacion.MAYOR_QUE)
             {
@@ -103,10 +128,6 @@ namespace CompiPascal.Instrucciones
             else if (tipo == Tipo_operacion.MENOR_I)
             {
                 return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)((Double)a.valor <= (Double)(b.valor)));
-            }
-            else if (tipo == Tipo_operacion.CONCATENACION)
-            {
-                return new Primitivo(Primitivo.tipo_val.CADENA, (object)((String)a.valor + (String)(b.valor)));
             }
             else if (tipo == Tipo_operacion.OO)
             {

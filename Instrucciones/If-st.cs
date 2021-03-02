@@ -11,13 +11,24 @@ namespace CompiPascal.Instrucciones
 
         private Operacion condicion;
         private LinkedList<Instruccion> listaInstrucciones;
+        private LinkedList<Instruccion> listaInstruccionesElse;
 
 
         public If_st(Operacion x, LinkedList<Instruccion> y)
         {
             this.condicion = x;
             this.listaInstrucciones = y;
+            this.listaInstruccionesElse = null;
         }
+
+
+        public If_st(Operacion x, LinkedList<Instruccion> y, LinkedList<Instruccion> z)
+        {
+            this.condicion = x;
+            this.listaInstrucciones = y;
+            this.listaInstruccionesElse = z;
+        }
+
 
 
         public Object ejecutar(TSimbolo ts)
@@ -31,6 +42,19 @@ namespace CompiPascal.Instrucciones
                 foreach (Instruccion ins in listaInstrucciones)
                 {
                     ins.ejecutar(tablaLocal);
+                }
+            }
+            else
+            {
+                if (this.listaInstruccionesElse != null)
+                {
+                    //contiene else con almenos una instruccion
+                    TSimbolo tablaLocal = new TSimbolo(ts);
+
+                    foreach (Instruccion ins in listaInstruccionesElse)
+                    {
+                        ins.ejecutar(tablaLocal);
+                    }
                 }
             }
 

@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using CompiPascal.General;
 using CompiPascal.TablaSimbolos;
-using System.Linq;
-using System.Threading.Tasks;
+using CompiPascal.General;
 
 namespace CompiPascal.Instrucciones
 {
@@ -12,6 +11,7 @@ namespace CompiPascal.Instrucciones
     {
 
         private Instruccion contenido;
+        //cambiar a lista de instrucciones :)
 
         public Writeln(Instruccion c)
         {
@@ -20,8 +20,10 @@ namespace CompiPascal.Instrucciones
 
         public Object ejecutar(TSimbolo ts)
         {
-            string e = contenido.ejecutar(ts).ToString();
-            Maestro.Instance.addOutput(e);
+            
+            Primitivo x = (Primitivo)contenido.ejecutar(ts);
+
+            Maestro.Instance.addOutput(x.valor.ToString());
             return null;
         }
 
