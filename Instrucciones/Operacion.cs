@@ -29,7 +29,10 @@ namespace CompiPascal.Instrucciones
             MAYOR_I,
             MENOR_I,
             NEGACION,
-            PRIMITIVO
+            PRIMITIVO,
+            UNICO,
+            MODULO,
+            EQUIVALENCIA
         }
 
         private Tipo_operacion tipo;
@@ -53,6 +56,12 @@ namespace CompiPascal.Instrucciones
             this.val = prim;
         }
 
+        public Operacion(Operacion prim)
+        {
+            this.tipo = Tipo_operacion.UNICO;
+            this.operadorIzq = prim;
+        }
+
 
         //retorna simbolo
 
@@ -63,18 +72,25 @@ namespace CompiPascal.Instrucciones
 
             Object der = new Object();
             Object izq = new Object();
+            izq = null;
+            der = null;
 
 
-            if (tipo == Tipo_operacion.NEGATIVO || tipo == Tipo_operacion.NEGACION)
+            if (tipo == Tipo_operacion.NEGATIVO || tipo == Tipo_operacion.NEGACION || tipo == Tipo_operacion.UNICO)
             {
                 //solo nos interesa el izquierdo
-                izq = operadorDer.ejecutar(ts);
+                izq = operadorIzq.ejecutar(ts);
                 der = null;
             }
-            else
+            else 
             {
-                der = operadorIzq.ejecutar(ts);
-                izq = operadorDer.ejecutar(ts);
+                if (tipo != Tipo_operacion.PRIMITIVO)
+                {
+                    izq = operadorIzq.ejecutar(ts);
+                    der = operadorDer.ejecutar(ts);
+                }
+                
+                
             }
 
             Primitivo a = (Primitivo)izq;
@@ -82,64 +98,78 @@ namespace CompiPascal.Instrucciones
 
             if (tipo == Tipo_operacion.DIVISION)
             {   
-                return new Primitivo(Primitivo.tipo_val.INT, (object)((Double)a.valor / (Double)b.valor));
+                return new Primitivo(Primitivo.tipo_val.INT, (object)(Convert.ToDouble(a.valor) / Convert.ToDouble(b.valor)));
             }
             else if (tipo == Tipo_operacion.MULTIPLICACION)
             {
-                return new Primitivo(Primitivo.tipo_val.INT, (object)((Double)a.valor * (Double)b.valor));
+                return new Primitivo(Primitivo.tipo_val.INT, (object)(Convert.ToDouble(a.valor) * Convert.ToDouble(b.valor)));
             }
             else if (tipo == Tipo_operacion.RESTA)
             {
-                return new Primitivo(Primitivo.tipo_val.INT, (object)((Double)a.valor - (Double)b.valor));
+                return new Primitivo(Primitivo.tipo_val.INT, (object)(Convert.ToDouble(a.valor) - Convert.ToDouble(b.valor)));
+            }
+            else if (tipo == Tipo_operacion.MODULO)
+            {
+                return new Primitivo(Primitivo.tipo_val.INT, (object)(Convert.ToDouble(a.valor) % Convert.ToDouble(b.valor)));
             }
             else if (tipo == Tipo_operacion.SUMA)
             {
                 //si los dos son string hace la concatenacion
-                if (a.t_val == Primitivo.tipo_val.CADENA && a.t_val == Primitivo.tipo_val.CADENA)
+                if (a.t_val == Primitivo.tipo_val.CADENA && b.t_val == Primitivo.tipo_val.CADENA)
                 {
-                    return new Primitivo(Primitivo.tipo_val.CADENA, (object)((String)a.valor + (String)(b.valor)));
+                    //System.Diagnostics.Debug.WriteLine(Convert.ToString(a.valor));
+                    return new Primitivo(Primitivo.tipo_val.CADENA, (object)(Convert.ToString(a.valor) + Convert.ToString(b.valor)));
                 }
                 else
                 {
-                    return new Primitivo(Primitivo.tipo_val.INT, (object)((Double)a.valor + (Double)b.valor));
+                    return new Primitivo(Primitivo.tipo_val.INT, (object)( Convert.ToDouble(a.valor) + Convert.ToDouble(b.valor)));
                 }
 
             }
             else if (tipo == Tipo_operacion.NEGATIVO)
             {
-                return new Primitivo(Primitivo.tipo_val.INT, (object)((Double)a.valor * (Double)(-1)));
+                return new Primitivo(Primitivo.tipo_val.INT, (object)(Convert.ToDouble(a.valor) + Convert.ToDouble(-1)));
             }
             else if (tipo == Tipo_operacion.NEGACION)
             {
-                return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)!((Boolean)a.valor));
+                return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)!(Convert.ToBoolean(a.valor)));
             }
             else if (tipo == Tipo_operacion.MAYOR_QUE)
             {
-                return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)((Double)a.valor > (Double)(b.valor)));
+                return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)(Convert.ToDouble(a.valor) > Convert.ToDouble(b.valor)));
             }
             else if (tipo == Tipo_operacion.MENOR_QUE)
             {
-                return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)((Double)a.valor < (Double)(b.valor)));
+                return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)(Convert.ToDouble(a.valor) < Convert.ToDouble(b.valor)));
             }
             else if (tipo == Tipo_operacion.MAYOR_I)
             {
-                return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)((Double)a.valor >= (Double)(b.valor)));
+                return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)(Convert.ToDouble(a.valor) >= Convert.ToDouble(b.valor)));
             }
             else if (tipo == Tipo_operacion.MENOR_I)
             {
-                return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)((Double)a.valor <= (Double)(b.valor)));
+                return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)(Convert.ToDouble(a.valor) <= Convert.ToDouble(b.valor)));
             }
             else if (tipo == Tipo_operacion.OO)
             {
-                return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)((Boolean)a.valor || (Boolean)(b.valor)));
+                return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)(Convert.ToBoolean(a.valor) || Convert.ToBoolean(b.valor)));
             }
             else if (tipo == Tipo_operacion.YY)
             {
-                return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)((Boolean)a.valor && (Boolean)(b.valor)));
+                return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)(Convert.ToBoolean(a.valor) && Convert.ToBoolean(b.valor)));
+            }
+            else if (tipo == Tipo_operacion.EQUIVALENCIA)
+            {
+                
+                return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)(a.valor.Equals(b.valor)));
             }
             else if (tipo == Tipo_operacion.PRIMITIVO)
             {
                 return this.val; // si es el minimo valor
+            }
+            else if (tipo == Tipo_operacion.UNICO)
+            {
+                return new Primitivo(a.t_val, (object)a.valor);
             }
             else
             {

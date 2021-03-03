@@ -91,6 +91,9 @@ namespace CompiPascal.Analizador
             var and_ = ToTerm("and");
             var or_ = ToTerm("or");
 
+            var true_ = ToTerm("true");
+            var false_ = ToTerm("false");
+
 
             RegisterOperators(1, mas, menos);
             RegisterOperators(2, por, dividir);
@@ -203,13 +206,13 @@ namespace CompiPascal.Analizador
                 ;
 
             lista_instr.Rule 
-                = instr_normal + ptcoma + lista_instr
-                | instr_normal + ptcoma
+                = instr_normal + lista_instr
+                | instr_normal 
                 ;
 
 
 
-            print_.Rule = writeln_ + pizq + print_parametros + pder + ptcoma;
+            print_.Rule = writeln_ + pizq + expresion + pder + ptcoma;
 
             print_parametros.Rule 
                 = expresion + print_parametros
@@ -249,14 +252,19 @@ namespace CompiPascal.Analizador
 
 
             expresion.Rule
-                = valor + mas + valor
-                | valor + menos + valor
-                | valor + por + valor
-                | valor + dividir + valor
-                | valor + modulo + valor
-                | valor + and_ + valor
-                | valor + or_ + valor
-                | negacion + valor 
+                = expresion + mas + expresion
+                | expresion + menos + expresion
+                | expresion + por + expresion
+                | expresion + dividir + expresion
+                | expresion + modulo + expresion
+                | expresion + and_ + expresion
+                | expresion + or_ + expresion
+                | expresion + mayor + expresion
+                | expresion + menor + expresion
+                | expresion + mayor + igual + expresion
+                | expresion + menor + igual + expresion
+                | expresion + igual + igual + expresion
+                | negacion + expresion
                 | valor
                 ;
 
@@ -266,6 +274,8 @@ namespace CompiPascal.Analizador
                 | identificador
                 | cadena
                 | pizq + expresion + pder
+                | true_
+                | false_
                 ;
 
             asignacion.Rule = identificador + dpunto + igual + expresion;

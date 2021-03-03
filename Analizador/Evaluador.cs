@@ -32,23 +32,29 @@ namespace CompiPascal.Analizador
             if (raiz_grogram == null)
             {
                 //indica error
-                /*Maestro.Instance.addMessage("Entrada incorrecta");
+                //Maestro.Instance.addMessage("Entrada incorrecta");
                 foreach (Irony.LogMessage a in arbol.ParserMessages)
                 {
-                    Error tmp = new Error(
-                            a.Location.Line + 1, a.Location.Column + 1, a.Message, Error.tipos.SINTACTICO
-                        );
-                    Maestro.Instance.addError(tmp);
-                }*/
+                    System.Diagnostics.Debug.WriteLine(a.Message, a.Location.Line, a.Location.Column);
+                }
+                System.Diagnostics.Debug.WriteLine("compilado con errores");
             }
             else
             {
                 //mandamos a llamar a los metodos de instrucciones
                 //Maestro.Instance.addMessage("Todo correcto");
-                _ = this.generarImagen(raiz_grogram); //se usa el simbolo de descarte
+                //_ = this.generarImagen(raiz_grogram); //se usa el simbolo de descarte
+
+                this.evaluarInstrucciones(raiz_grogram);
 
                 TSimbolo global = new TSimbolo(null);
                 //mandar a llamar ejecutar con try catch
+
+                foreach(Instruccion t in instrucciones_globales)
+                {
+                    //ejecucion maestra
+                    _ = t.ejecutar(global);
+                }
 
             }
 
@@ -105,7 +111,7 @@ namespace CompiPascal.Analizador
         public Instruccion evaluarInstruccion(ParseTreeNode ps)
         {
             //aca se leeee
-            switch (ps.ChildNodes[0].Term.Name)
+            switch (ps.ChildNodes[0].ChildNodes[0].Term.Name)
             {
                 case "funcion":
                     //llama a funcion
@@ -121,10 +127,11 @@ namespace CompiPascal.Analizador
                 case "procedimiento":
                     // 
                     break;
-                case "main_":
+                case "main":
                     //                      main           listaInstr    
-                    ParseTreeNode auxx = ps.ChildNodes[0].ChildNodes[1];
-                    return new MainProgram(null);
+                    ParseTreeNode auxx = ps.ChildNodes[0].ChildNodes[0].ChildNodes[1];
+                    
+                    return new MainProgram(evaluar_general(auxx));
             }
 
             return null;
@@ -134,13 +141,13 @@ namespace CompiPascal.Analizador
         {
             //recibimos lista instr
 
-            if (ps.ChildNodes.Count == 3)
+            if (ps.ChildNodes.Count == 2)
             {
                 //multiples
                 LinkedList<Instruccion> temporal = new LinkedList<Instruccion>();
                 temporal.AddLast(unitaria(ps.ChildNodes[0]));
 
-                LinkedList<Instruccion> t1 = new LinkedList<Instruccion>(evaluar_general(ps.ChildNodes[2]));
+                LinkedList<Instruccion> t1 = new LinkedList<Instruccion>(evaluar_general(ps.ChildNodes[1]));
                 foreach(Instruccion item in t1)
                 {
                     temporal.AddLast(item);
@@ -162,13 +169,132 @@ namespace CompiPascal.Analizador
         {
             //recibo instr normal
             ParseTreeNode aux = ps.ChildNodes[0];
-            if (aux.Term.Name == "print_")
+            if (aux.Term.Name == "print")
             {
-                //write ln
+                return new Writeln(evalOpr(aux.ChildNodes[2]));
             }
 
             return null;
         }
+
+        public Operacion evalOpr(ParseTreeNode ps)
+        {
+            //evaluamos la expresion
+            if (ps.ChildNodes.Count == 3)
+            {
+                //es op + signo + op
+                string opr_tipo = ps.ChildNodes[1].Term.Name;
+                if (opr_tipo == "+")
+                {
+                    return new Operacion(evalOpr(ps.ChildNodes[0]), evalOpr(ps.ChildNodes[2]), Operacion.Tipo_operacion.SUMA);
+                } 
+                else if (opr_tipo == "-")
+                {
+                    return new Operacion(evalOpr(ps.ChildNodes[0]), evalOpr(ps.ChildNodes[2]), Operacion.Tipo_operacion.RESTA);
+                }
+                else if (opr_tipo == "*")
+                {
+                    return new Operacion(evalOpr(ps.ChildNodes[0]), evalOpr(ps.ChildNodes[2]), Operacion.Tipo_operacion.MULTIPLICACION);
+                }
+                else if (opr_tipo == "/")
+                {
+                    return new Operacion(evalOpr(ps.ChildNodes[0]), evalOpr(ps.ChildNodes[2]), Operacion.Tipo_operacion.DIVISION);
+                }
+                else if (opr_tipo == "%")
+                {
+                    return new Operacion(evalOpr(ps.ChildNodes[0]), evalOpr(ps.ChildNodes[2]), Operacion.Tipo_operacion.MODULO);
+                }
+                else if (opr_tipo == ">")
+                {
+                    return new Operacion(evalOpr(ps.ChildNodes[0]), evalOpr(ps.ChildNodes[2]), Operacion.Tipo_operacion.MAYOR_QUE);
+                }
+                else if (opr_tipo == "<")
+                {
+                    return new Operacion(evalOpr(ps.ChildNodes[0]), evalOpr(ps.ChildNodes[2]), Operacion.Tipo_operacion.MENOR_QUE);
+                }
+                else if (opr_tipo == "<")
+                {
+                    return new Operacion(evalOpr(ps.ChildNodes[0]), evalOpr(ps.ChildNodes[2]), Operacion.Tipo_operacion.MENOR_QUE);
+                }
+                else if (opr_tipo == "and")
+                {
+                    return new Operacion(evalOpr(ps.ChildNodes[0]), evalOpr(ps.ChildNodes[2]), Operacion.Tipo_operacion.YY);
+                }
+                else if (opr_tipo == "or")
+                {
+                    return new Operacion(evalOpr(ps.ChildNodes[0]), evalOpr(ps.ChildNodes[2]), Operacion.Tipo_operacion.OO);
+                }
+
+            }
+            else if (ps.ChildNodes.Count == 4)
+            {
+                //mayor igual, menor igual, igual igual
+                string opr_tipo = ps.ChildNodes[1].Term.Name;
+
+                if (opr_tipo == ">")
+                {
+                    return new Operacion(evalOpr(ps.ChildNodes[0]), evalOpr(ps.ChildNodes[3]), Operacion.Tipo_operacion.MAYOR_I);
+                }
+                else if (opr_tipo == "<")
+                {
+                    return new Operacion(evalOpr(ps.ChildNodes[0]), evalOpr(ps.ChildNodes[3]), Operacion.Tipo_operacion.MENOR_I);
+                }
+                else if (opr_tipo == "=")
+                {
+                    return new Operacion(evalOpr(ps.ChildNodes[0]), evalOpr(ps.ChildNodes[3]), Operacion.Tipo_operacion.EQUIVALENCIA);
+                }
+
+            }
+            else if (ps.ChildNodes.Count == 2)
+            {
+                //dos, negacion o negativo
+            }
+            else
+            {
+                //es valor
+                return new Operacion(valor_unico(ps.ChildNodes[0]));
+            }
+            return null;
+        }
+
+        public Operacion valor_unico(ParseTreeNode ps)
+        {
+            //es cadena, numero
+            if (ps.ChildNodes.Count == 3)
+            {
+                //parentesis
+                return new Operacion(evalOpr(ps.ChildNodes[1]));
+            }
+            else
+            {
+                //es primitivo
+                ParseTreeNode aux = ps.ChildNodes[0]; //
+                if (aux.Term.Name == "numero")
+                {
+                    Primitivo p = new Primitivo(Primitivo.tipo_val.INT, aux.Token.Value);
+                    return new Operacion(p);
+                }
+                else if (aux.Term.Name == "cadena")
+                {
+                    Primitivo p = new Primitivo(Primitivo.tipo_val.CADENA, aux.Token.Value);
+                    return new Operacion(p);
+                }
+                else if (aux.Term.Name == "true")
+                {
+                    Primitivo p = new Primitivo(Primitivo.tipo_val.CADENA, (object)true );
+                    return new Operacion(p);
+                }
+                else if (aux.Term.Name == "false")
+                {
+                    Primitivo p = new Primitivo(Primitivo.tipo_val.CADENA, (object)false);
+                    return new Operacion(p);
+                }
+
+            }
+
+            return null;
+        }
+
 
 
         public void evalFuncion()

@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Text;
 using CompiPascal.General;
 using CompiPascal.TablaSimbolos;
-using CompiPascal.General;
+
 
 namespace CompiPascal.Instrucciones
 {
     class Writeln: Instruccion
     {
 
-        private Instruccion contenido;
+        private Operacion contenido;
         //cambiar a lista de instrucciones :)
 
-        public Writeln(Instruccion c)
+        public Writeln(Operacion c)
         {
             this.contenido = c;
         }
@@ -24,6 +24,7 @@ namespace CompiPascal.Instrucciones
             Primitivo x = (Primitivo)contenido.ejecutar(ts);
 
             Maestro.Instance.addOutput(x.valor.ToString());
+            System.Diagnostics.Debug.WriteLine(x.valor.ToString());
             return null;
         }
 

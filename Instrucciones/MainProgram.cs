@@ -20,7 +20,7 @@ namespace CompiPascal.Instrucciones
             TSimbolo tablaLocal = new TSimbolo(ts);
             foreach (Instruccion ins in listaInstrucciones)
             {
-                ins.ejecutar(tablaLocal);
+               _ =  ins.ejecutar(tablaLocal);
             }
 
             return null;
