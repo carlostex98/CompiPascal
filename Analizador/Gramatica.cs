@@ -186,8 +186,8 @@ namespace CompiPascal.Analizador
 
             declaracion.Rule
                 = var_ + list_vp + dpunto + type_var + ptcoma
-                | var_ + list_vp + dpunto + type_var + igual + declaracion + ptcoma
-                | const_ + identificador + dpunto + type_var + igual + declaracion + ptcoma
+                | var_ + list_vp + dpunto + type_var + igual + expresion + ptcoma
+                | const_ + identificador + dpunto + type_var + igual + expresion + ptcoma
                 ;
 
 
@@ -220,7 +220,7 @@ namespace CompiPascal.Analizador
                 ;
 
             bloque_inst.Rule
-                = begin_ + lista_instr + end_
+                = begin_ + lista_instr + end_ + ptcoma
                 | instr_normal
                 ;
 
@@ -265,6 +265,7 @@ namespace CompiPascal.Analizador
                 | expresion + menor + igual + expresion
                 | expresion + igual + igual + expresion
                 | negacion + expresion
+                | menos + expresion
                 | valor
                 ;
 

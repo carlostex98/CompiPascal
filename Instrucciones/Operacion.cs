@@ -128,7 +128,7 @@ namespace CompiPascal.Instrucciones
             }
             else if (tipo == Tipo_operacion.NEGATIVO)
             {
-                return new Primitivo(Primitivo.tipo_val.INT, (object)(Convert.ToDouble(a.valor) + Convert.ToDouble(-1)));
+                return new Primitivo(Primitivo.tipo_val.INT, (object)(Convert.ToDouble(a.valor) *  Convert.ToDouble(-1)));
             }
             else if (tipo == Tipo_operacion.NEGACION)
             {

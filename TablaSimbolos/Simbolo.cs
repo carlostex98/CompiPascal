@@ -9,6 +9,14 @@ namespace CompiPascal.TablaSimbolos
     public class Simbolo
     {
         
+        public enum tipo{ 
+            STRING,
+            INTEGER,
+            REAL,
+            BOOLEAN
+        };
+
+
         private String id;
         private Primitivo valor;
 

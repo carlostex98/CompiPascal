@@ -19,7 +19,15 @@ namespace CompiPascal.Analizador
         private string grafo = "";   //aqui voy a ir guardando todo el codigo en dot
         private int contador = 0;
         LinkedList<Instruccion> instrucciones_globales = new LinkedList<Instruccion>();
-        
+
+        public enum tipo
+        {
+            STRING,
+            INTEGER,
+            REAL,
+            BOOLEAN
+        };
+
 
         public void analizar_arbol(String entrada)
         {
@@ -123,6 +131,8 @@ namespace CompiPascal.Analizador
                     break;
                 case "declaracion":
                     //registramos en los simbolos, en este caso el contexto general
+                    ParseTreeNode mx = ps.ChildNodes[0].ChildNodes[0];
+                    return declaracionVariable(mx);
                     break;
                 case "procedimiento":
                     // 
@@ -136,6 +146,76 @@ namespace CompiPascal.Analizador
 
             return null;
         }
+
+        public Instruccion declaracionVariable(ParseTreeNode ps)
+        {
+            if (ps.ChildNodes[0].Term.Name == "var")
+            {
+                LinkedList<string> nombres = listaVar(ps.ChildNodes[1]);
+
+                //variable
+                if (ps.ChildNodes.Count == 5)
+                {
+                    //variable sin inicializar
+                    
+
+                }
+                else{
+                    //variable inicializada
+                }
+            }
+
+
+            return null;
+        }
+
+
+        public tipo calcularTipo(string v)
+        {
+            if (v == "string")
+            {
+                return tipo.STRING;
+            } 
+            else if (v == "integer")
+            {
+                return tipo.INTEGER;
+            }
+            else if (v == "real")
+            {
+                return tipo.REAL;
+            }
+            else if (v == "boolean")
+            {
+                return tipo.BOOLEAN;
+            }
+            return tipo.STRING;
+        }
+
+
+
+        public LinkedList<string> listaVar(ParseTreeNode ps)
+        {
+            if (ps.ChildNodes.Count == 3)
+            {
+                LinkedList<string> temporal = new LinkedList<string>();
+                temporal.AddLast(ps.ChildNodes[0].Token.ValueString);
+
+                LinkedList<string> t1 = new LinkedList<string>(listaVar(ps.ChildNodes[2]));
+                foreach(string item in t1)
+                {
+                    temporal.AddLast(item);
+                }
+                return temporal;
+
+            }
+            else
+            {
+                LinkedList<string> temporal = new LinkedList<string>();
+                temporal.AddLast(ps.ChildNodes[0].Token.ValueString);
+                return temporal;
+            }
+        }
+
 
         public LinkedList<Instruccion> evaluar_general(ParseTreeNode ps)
         {
@@ -172,10 +252,49 @@ namespace CompiPascal.Analizador
             if (aux.Term.Name == "print")
             {
                 return new Writeln(evalOpr(aux.ChildNodes[2]));
+            } 
+            else if (aux.Term.Name == "if_then")
+            {
+                //evalualos la expresion
+                //System.Diagnostics.Debug.WriteLine(aux.ChildNodes.Count);
+                return evalIf(aux);
             }
 
             return null;
         }
+
+        public Instruccion evalIf(ParseTreeNode ps)
+        {
+            if (ps.ChildNodes.Count == 4)
+            {
+                
+                return new If_st(evalOpr(ps.ChildNodes[1]), evalBloque(ps.ChildNodes[3]));
+            }
+            else
+            {
+                //tiene else
+                
+                return new If_st(evalOpr(ps.ChildNodes[1]), evalBloque(ps.ChildNodes[3]), evalBloque(ps.ChildNodes[5]));
+
+            }
+
+        }
+
+        public LinkedList<Instruccion> evalBloque(ParseTreeNode ps)
+        {
+            if (ps.ChildNodes.Count == 4)
+            {
+                return evaluar_general(ps.ChildNodes[1]);
+            }
+            else
+            {
+                LinkedList<Instruccion> t = new LinkedList<Instruccion>();
+                t.AddLast(unitaria(ps.ChildNodes[0]));
+                return t;
+            }
+
+        }
+
 
         public Operacion evalOpr(ParseTreeNode ps)
         {
@@ -187,7 +306,7 @@ namespace CompiPascal.Analizador
                 if (opr_tipo == "+")
                 {
                     return new Operacion(evalOpr(ps.ChildNodes[0]), evalOpr(ps.ChildNodes[2]), Operacion.Tipo_operacion.SUMA);
-                } 
+                }
                 else if (opr_tipo == "-")
                 {
                     return new Operacion(evalOpr(ps.ChildNodes[0]), evalOpr(ps.ChildNodes[2]), Operacion.Tipo_operacion.RESTA);
@@ -248,6 +367,16 @@ namespace CompiPascal.Analizador
             else if (ps.ChildNodes.Count == 2)
             {
                 //dos, negacion o negativo
+                string opr_tipo = ps.ChildNodes[0].Term.Name;
+                if (opr_tipo == "!")
+                {
+                    return new Operacion(evalOpr(ps.ChildNodes[1]), null, Operacion.Tipo_operacion.NEGACION);
+                } 
+                else if (opr_tipo == "-")
+                {
+                    return new Operacion(evalOpr(ps.ChildNodes[1]), null, Operacion.Tipo_operacion.NEGATIVO);
+                }
+                
             }
             else
             {

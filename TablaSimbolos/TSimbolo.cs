@@ -24,7 +24,6 @@ namespace CompiPascal.TablaSimbolos
                 return true;
             }
             return false;
-            
         }
 
 
