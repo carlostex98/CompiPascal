@@ -93,6 +93,7 @@ namespace CompiPascal.Analizador
 
             var true_ = ToTerm("true");
             var false_ = ToTerm("false");
+            var for_ = ToTerm("for");
 
 
             RegisterOperators(1, mas, menos);
@@ -131,6 +132,8 @@ namespace CompiPascal.Analizador
             NonTerminal super_instr = new NonTerminal("super_instr");
 
             NonTerminal inicio = new NonTerminal("inicio");
+
+            NonTerminal redefinir = new NonTerminal("redefinir");
 
 
             //NonTerminal  = new NonTerminal("");
@@ -203,7 +206,13 @@ namespace CompiPascal.Analizador
                 | repeat_until
                 | for_do
                 | print_
+                | redefinir
                 ;
+
+            redefinir.Rule
+                = identificador + dpunto + igual + expresion + ptcoma
+                ;
+
 
             lista_instr.Rule 
                 = instr_normal + lista_instr
@@ -245,8 +254,8 @@ namespace CompiPascal.Analizador
                 ;
 
             for_do.Rule
-                = identificador + dpunto + igual + expresion + to_ + expresion + instr_normal
-                | identificador + dpunto + igual + expresion + to_ + begin_ +  lista_instr + end_ + ptcoma
+                = for_ + identificador + dpunto + igual + expresion + to_ + expresion + do_ +instr_normal
+                | for_ + identificador + dpunto + igual + expresion + to_ + expresion + do_ + begin_ +  lista_instr + end_ + ptcoma
                 ;
 
 

@@ -21,18 +21,16 @@ namespace CompiPascal.Instrucciones
             CADENA,
             MAYOR_QUE,
             MENOR_QUE,
-            CONCATENACION,
             YY,
             OO,
-            AUMENTO,
-            DECREMENTO,
             MAYOR_I,
             MENOR_I,
             NEGACION,
             PRIMITIVO,
             UNICO,
             MODULO,
-            EQUIVALENCIA
+            EQUIVALENCIA,
+            ACCESO
         }
 
         private Tipo_operacion tipo;
@@ -40,6 +38,7 @@ namespace CompiPascal.Instrucciones
         private Operacion operadorDer;
         private Object valor; //pendiente eliminar
         private Primitivo val;
+        private Acceso acc;
        
         // maneja todas
         public Operacion(Operacion operadorIzq, Operacion operadorDer, Tipo_operacion tipo)
@@ -62,6 +61,12 @@ namespace CompiPascal.Instrucciones
             this.operadorIzq = prim;
         }
 
+        public Operacion(Acceso a)
+        {
+            this.tipo = Tipo_operacion.ACCESO;
+            this.acc = a;
+        }
+
 
         //retorna simbolo
 
@@ -74,6 +79,12 @@ namespace CompiPascal.Instrucciones
             Object izq = new Object();
             izq = null;
             der = null;
+
+            if (tipo == Tipo_operacion.ACCESO)
+            {
+                Primitivo p = (Primitivo)acc.ejecutar(ts);
+                return p;
+            }
 
 
             if (tipo == Tipo_operacion.NEGATIVO || tipo == Tipo_operacion.NEGACION || tipo == Tipo_operacion.UNICO)

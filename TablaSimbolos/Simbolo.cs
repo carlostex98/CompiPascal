@@ -17,14 +17,16 @@ namespace CompiPascal.TablaSimbolos
         };
 
 
-        private String id;
-        private Primitivo valor;
+        private string id;
+        public Primitivo valor;
+        private tipo Tipo;
 
 
-        public Simbolo(String id, Primitivo v)
+        public Simbolo(String id, tipo t, Primitivo v)
         {
             this.valor = v;
             this.id = id;
+            this.Tipo = t;
         }
         public String getId()
         {
@@ -36,9 +38,9 @@ namespace CompiPascal.TablaSimbolos
             return valor;
         }
 
-        public void setValor(Object v)
+        public void setValor(Primitivo v)
         {
-            //valor = v;
+            valor = v;
         }
 
     }

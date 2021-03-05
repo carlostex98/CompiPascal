@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using CompiPascal.General;
 
 namespace CompiPascal.TablaSimbolos
 {
@@ -56,16 +57,42 @@ namespace CompiPascal.TablaSimbolos
         }
 
 
-        public bool redefinir(string nombre, Simbolo sb)
+        public bool redefinir(string nombre, Primitivo sb)
         {
-            //verificamos que exista, de lo contrario retorna null
+            //verificamos que exista, de lo contrario retorna false
             //todo: varificar que sean del mismo tipo
 
             if (this.variables.ContainsKey(nombre))
             {
-                this.variables[nombre] = sb;
+                //this.variables[nombre] = sb;
+                Simbolo s;
+                this.variables.TryGetValue(nombre, out s);
+                s.setValor(sb);
+                this.variables[nombre] = s;
                 return true;
             }
+            else
+            {
+                //recorremos los demas contextos
+                TSimbolo aux = this.heredado;
+                while (aux != null)
+                {
+                    if (aux.variables.ContainsKey(nombre))
+                    {
+                        //aux.variables[nombre] = sb;
+                        Simbolo s;
+                        aux.variables.TryGetValue(nombre, out s);
+                        s.setValor(sb);
+                        aux.variables[nombre] = s;
+                        return true;
+                    }
+                    aux = aux.heredado;
+                }
+
+            }
+
+
+
             return false;
         }
 

@@ -30,6 +30,9 @@ namespace CompiPascal.Instrucciones
                 {
                     ins.ejecutar(tablaLocal);
                 }
+
+                condres = (Primitivo)condicion.ejecutar(ts);
+
             }
             return null;
         }

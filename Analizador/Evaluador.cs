@@ -44,6 +44,9 @@ namespace CompiPascal.Analizador
                 foreach (Irony.LogMessage a in arbol.ParserMessages)
                 {
                     System.Diagnostics.Debug.WriteLine(a.Message, a.Location.Line, a.Location.Column);
+                    System.Diagnostics.Debug.WriteLine(a.Location.Line);
+                    System.Diagnostics.Debug.WriteLine(a.Location.Column);
+                    System.Diagnostics.Debug.WriteLine("-----");
                 }
                 System.Diagnostics.Debug.WriteLine("compilado con errores");
             }
@@ -53,7 +56,7 @@ namespace CompiPascal.Analizador
                 //Maestro.Instance.addMessage("Todo correcto");
                 //_ = this.generarImagen(raiz_grogram); //se usa el simbolo de descarte
 
-                this.evaluarInstrucciones(raiz_grogram);
+                this.evaluarInstrucciones(raiz_grogram.ChildNodes[0]);
 
                 TSimbolo global = new TSimbolo(null);
                 //mandar a llamar ejecutar con try catch
@@ -102,6 +105,8 @@ namespace CompiPascal.Analizador
         //metodo maestro
         public void evaluarInstrucciones(ParseTreeNode ps)
         {
+            //System.Diagnostics.Debug.WriteLine(ps.ChildNodes.Count); 
+
             if (ps.ChildNodes.Count == 2)
             {
                 this.instrucciones_globales.AddLast(evaluarInstruccion(ps.ChildNodes[0]));
@@ -119,19 +124,19 @@ namespace CompiPascal.Analizador
         public Instruccion evaluarInstruccion(ParseTreeNode ps)
         {
             //aca se leeee
-            switch (ps.ChildNodes[0].ChildNodes[0].Term.Name)
+            switch (ps.ChildNodes[0].Term.Name)
             {
                 case "funcion":
                     //llama a funcion
                     break;
                 case "programa":
                     //evaluamos la sentencia programa, solo hace un print a la consola virtual
-                    ParseTreeNode aux = ps.ChildNodes[0].ChildNodes[1];
+                    ParseTreeNode aux = ps.ChildNodes[1];
                     Maestro.Instance.addOutput("PROGRAM " + aux.Token.ValueString);
                     break;
                 case "declaracion":
                     //registramos en los simbolos, en este caso el contexto general
-                    ParseTreeNode mx = ps.ChildNodes[0].ChildNodes[0];
+                    ParseTreeNode mx = ps.ChildNodes[0];
                     return declaracionVariable(mx);
                     break;
                 case "procedimiento":
@@ -139,7 +144,7 @@ namespace CompiPascal.Analizador
                     break;
                 case "main":
                     //                      main           listaInstr    
-                    ParseTreeNode auxx = ps.ChildNodes[0].ChildNodes[0].ChildNodes[1];
+                    ParseTreeNode auxx = ps.ChildNodes[0].ChildNodes[1];
                     
                     return new MainProgram(evaluar_general(auxx));
             }
@@ -152,16 +157,16 @@ namespace CompiPascal.Analizador
             if (ps.ChildNodes[0].Term.Name == "var")
             {
                 LinkedList<string> nombres = listaVar(ps.ChildNodes[1]);
-
+                
                 //variable
                 if (ps.ChildNodes.Count == 5)
                 {
-                    //variable sin inicializar
-                    
-
+                    //System.Diagnostics.Debug.WriteLine(ps.ChildNodes[3].ChildNodes[0].Term.Name);
+                    return new Declaracion(nombres, calcularTipo(ps.ChildNodes[3].ChildNodes[0].Term.Name), (Operacion)null );
                 }
                 else{
                     //variable inicializada
+                    return new Declaracion(nombres, calcularTipo(ps.ChildNodes[3].ChildNodes[0].Term.Name), evalOpr(ps.ChildNodes[5]));
                 }
             }
 
@@ -170,25 +175,25 @@ namespace CompiPascal.Analizador
         }
 
 
-        public tipo calcularTipo(string v)
+        public Simbolo.tipo calcularTipo(string v)
         {
             if (v == "string")
             {
-                return tipo.STRING;
+                return Simbolo.tipo.STRING;
             } 
             else if (v == "integer")
             {
-                return tipo.INTEGER;
+                return Simbolo.tipo.INTEGER;
             }
             else if (v == "real")
             {
-                return tipo.REAL;
+                return Simbolo.tipo.REAL;
             }
             else if (v == "boolean")
             {
-                return tipo.BOOLEAN;
+                return Simbolo.tipo.BOOLEAN;
             }
-            return tipo.STRING;
+            return Simbolo.tipo.STRING;
         }
 
 
@@ -259,10 +264,60 @@ namespace CompiPascal.Analizador
                 //System.Diagnostics.Debug.WriteLine(aux.ChildNodes.Count);
                 return evalIf(aux);
             }
+            else if (aux.Term.Name == "redefinir")
+            {
+                //evalualos la expresion
+                //System.Diagnostics.Debug.WriteLine(aux.ChildNodes[0].Token.ValueString);
+                //return evalIf(aux);
+                return new Asignacion(aux.ChildNodes[0].Token.ValueString, evalOpr(aux.ChildNodes[3]));
+            }
+            else if (aux.Term.Name == "while_do")
+            {
+                return evalWhile(aux);
+            }
+            else if (aux.Term.Name == "for_do")
+            {
+                return evalFor(aux);
+            }
+            else if (aux.Term.Name == "repeat_until")
+            {
+                return new RepeatUntil(evaluar_general(aux.ChildNodes[1]), evalOpr(aux.ChildNodes[3]));
+            }
 
             return null;
         }
 
+        
+
+
+        public Instruccion evalFor(ParseTreeNode ps)
+        {
+            if (ps.ChildNodes.Count == 9)
+            {
+
+                Asignacion t1 = new Asignacion(ps.ChildNodes[1].Token.ValueString, evalOpr(ps.ChildNodes[4]));
+                LinkedList<Instruccion> t3 = new LinkedList<Instruccion>();
+                t3.AddLast(unitaria(ps.ChildNodes[8]));
+                return new ForDo(t1, evalOpr(ps.ChildNodes[6]), t3);
+            }
+            else
+            {
+                Asignacion t1 = new Asignacion(ps.ChildNodes[1].Token.ValueString, evalOpr(ps.ChildNodes[4]));
+                return new ForDo(t1, evalOpr(ps.ChildNodes[6]), evaluar_general(ps.ChildNodes[9]));
+            }
+
+            //return null;
+        }
+
+
+        public Instruccion evalWhile(ParseTreeNode ps)
+        {
+
+            
+            return new While(evalOpr(ps.ChildNodes[1]), evaluar_general(ps.ChildNodes[4]));
+
+            //return null;
+        }
         public Instruccion evalIf(ParseTreeNode ps)
         {
             if (ps.ChildNodes.Count == 4)
@@ -417,6 +472,12 @@ namespace CompiPascal.Analizador
                 {
                     Primitivo p = new Primitivo(Primitivo.tipo_val.CADENA, (object)false);
                     return new Operacion(p);
+                }
+                else if (aux.Term.Name == "identificador")
+                {
+                    //Primitivo p = new Primitivo(Primitivo.tipo_val.CADENA, (object)false);
+                    Acceso a = new Acceso(aux.Token.Value.ToString());
+                    return new Operacion(a);
                 }
 
             }
