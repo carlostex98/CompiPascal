@@ -6,7 +6,7 @@ using CompiPascal.General;
 
 namespace CompiPascal.Instrucciones
 {
-    class Declaracion: Instruccion
+    public class Declaracion: Instruccion
     {
 
         private string nombre;

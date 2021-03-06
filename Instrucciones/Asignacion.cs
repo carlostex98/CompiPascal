@@ -6,7 +6,7 @@ using CompiPascal.General;
 
 namespace CompiPascal.Instrucciones
 {
-    class Asignacion: Instruccion
+    public class Asignacion: Instruccion
     {
 
         public String id;

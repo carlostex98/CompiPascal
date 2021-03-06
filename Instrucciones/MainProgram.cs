@@ -5,7 +5,7 @@ using CompiPascal.TablaSimbolos;
 
 namespace CompiPascal.Instrucciones
 {
-    class MainProgram: Instruccion
+    public class MainProgram: Instruccion
     {
 
         private LinkedList<Instruccion> listaInstrucciones;

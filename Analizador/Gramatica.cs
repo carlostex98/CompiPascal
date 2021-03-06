@@ -291,8 +291,8 @@ namespace CompiPascal.Analizador
             asignacion.Rule = identificador + dpunto + igual + expresion;
 
             function_call.Rule 
-                = identificador + pizq + pder
-                | identificador + pizq + parametros_llamada+ pder
+                = identificador + pizq + pder + ptcoma
+                | identificador + pizq + parametros_llamada+ pder + ptcoma
                 ;
 
             parametros_llamada.Rule

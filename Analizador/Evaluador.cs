@@ -127,7 +127,8 @@ namespace CompiPascal.Analizador
             switch (ps.ChildNodes[0].Term.Name)
             {
                 case "funcion":
-                    //llama a funcion
+                    //llama a funcion(declaracion)
+                    return evalFuncDec(ps.ChildNodes[0]);
                     break;
                 case "programa":
                     //evaluamos la sentencia programa, solo hace un print a la consola virtual
@@ -148,6 +149,17 @@ namespace CompiPascal.Analizador
                     
                     return new MainProgram(evaluar_general(auxx));
             }
+
+            return null;
+        }
+
+        public Instruccion evalFuncDec(ParseTreeNode ps)
+        {
+            if (ps.ChildNodes.Count == 8)
+            {
+                return new Funcion(ps.ChildNodes[1].Token.ValueString, evaluar_general(ps.ChildNodes[5]), null);
+            }
+
 
             return null;
         }
@@ -283,11 +295,25 @@ namespace CompiPascal.Analizador
             {
                 return new RepeatUntil(evaluar_general(aux.ChildNodes[1]), evalOpr(aux.ChildNodes[3]));
             }
+            else if (aux.Term.Name == "function_call")
+            {
+                //return new CallFuncion(,);
+                return evalCall(aux);
+            }
 
             return null;
         }
 
         
+        public Instruccion evalCall(ParseTreeNode ps)
+        {
+            if (ps.ChildNodes.Count == 4)
+            {
+                return new CallFuncion(ps.ChildNodes[0].Token.ValueString, null);
+            }
+
+            return null;
+        }
 
 
         public Instruccion evalFor(ParseTreeNode ps)
@@ -487,11 +513,7 @@ namespace CompiPascal.Analizador
 
 
 
-        public void evalFuncion()
-        {
-            //encargado de cuardar la funcion
-        }
-
+ 
         public void evalDeclaracion()
         {
 

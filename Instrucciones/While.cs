@@ -7,7 +7,7 @@ using CompiPascal.General;
 
 namespace CompiPascal.Instrucciones
 {
-    class While:Instruccion
+    public class While:Instruccion
     {
         private Operacion condicion;
         private LinkedList<Instruccion> listaInstrucciones;

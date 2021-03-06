@@ -6,7 +6,7 @@ using CompiPascal.General;
 
 namespace CompiPascal.Instrucciones
 {
-    class ForDo:Instruccion
+    public class ForDo:Instruccion
     {
         private LinkedList<Instruccion> listaInstrucciones;
         private Operacion val_limite;

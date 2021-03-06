@@ -7,7 +7,7 @@ using CompiPascal.TablaSimbolos;
 
 namespace CompiPascal.Instrucciones
 {
-    class Operacion: Instruccion
+    public class Operacion: Instruccion
     {
         public enum Tipo_operacion
         {

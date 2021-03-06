@@ -6,7 +6,7 @@ using CompiPascal.General;
 
 namespace CompiPascal.Instrucciones
 {
-    class Acceso:Instruccion
+    public class Acceso:Instruccion
     {
 
         private string variable;

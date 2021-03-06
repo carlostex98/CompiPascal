@@ -13,7 +13,7 @@ namespace CompiPascal.TablaSimbolos
         public TSimbolo(TSimbolo ts = null)
         {
             this.heredado = ts;
-        }
+        } 
 
 
         public bool agregar(string nombre, Simbolo sb)

@@ -19,6 +19,8 @@ namespace CompiPascal.General
         private string grafo = "";   //aqui voy a ir guardando todo el codigo en dot
         private int contador = 0;
 
+        private Dictionary<string, FuncionDato> Funciones = new Dictionary<string, FuncionDato>();
+
         static Maestro() { }
         private Maestro() { }
         public static Maestro Instance
@@ -111,6 +113,22 @@ namespace CompiPascal.General
         }
 
 
+
+        public void guardarFuncion(string nombre, FuncionDato valor)
+        {
+            this.Funciones.Add(nombre, valor);
+        }
+
+        public FuncionDato AccederFuncion(string nombre)
+        {
+            if (Funciones.ContainsKey(nombre))
+            {
+                FuncionDato s;
+                Funciones.TryGetValue(nombre, out s);
+                return s;
+            }
+            return null;
+        }
 
     }
 }

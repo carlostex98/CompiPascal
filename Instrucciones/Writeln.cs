@@ -7,7 +7,7 @@ using CompiPascal.TablaSimbolos;
 
 namespace CompiPascal.Instrucciones
 {
-    class Writeln: Instruccion
+    public class Writeln: Instruccion
     {
 
         private Operacion contenido;

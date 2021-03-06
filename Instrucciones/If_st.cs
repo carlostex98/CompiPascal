@@ -6,7 +6,7 @@ using CompiPascal.General;
 
 namespace CompiPascal.Instrucciones
 {
-    class If_st: Instruccion
+    public class If_st: Instruccion
     {
 
         private Operacion condicion;

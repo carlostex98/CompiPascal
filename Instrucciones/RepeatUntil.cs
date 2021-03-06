@@ -6,7 +6,7 @@ using CompiPascal.General;
 
 namespace CompiPascal.Instrucciones
 {
-    class RepeatUntil:Instruccion
+    public class RepeatUntil:Instruccion
     {
 
         private Operacion condicion;
