@@ -11,7 +11,7 @@ namespace CompiPascal.Instrucciones
 
         private string nombre;
         private LinkedList<Operacion> parametros;
-        private LinkedList<Primitivo> final;
+        
 
         public CallFuncion(string n, LinkedList<Operacion> p)
         {
@@ -33,10 +33,14 @@ namespace CompiPascal.Instrucciones
             if (parametros != null)
             {
 
+                LinkedList<Primitivo> final = new LinkedList<Primitivo>();
+
                 foreach (Operacion p in parametros)
                 {
                     final.AddLast((Primitivo)p.ejecutar(local));
                 }
+
+                System.Diagnostics.Debug.WriteLine(f.retornarVars().Count);
 
                 foreach (Declaracion t in f.retornarVars())
                 {
@@ -59,9 +63,9 @@ namespace CompiPascal.Instrucciones
 
                     int i = 0;
                     int x = 0;
-                    foreach (Primitivo t in this.final)
+                    foreach (Primitivo t in final)
                     {
-                        string nx;
+                        string nx = "";
                         foreach (string no in nombres)
                         {
                             if (x == i)
@@ -72,7 +76,7 @@ namespace CompiPascal.Instrucciones
                             x++;
                         }
 
-                        Asignacion a = new Asignacion(nombre, new Operacion(t));
+                        Asignacion a = new Asignacion(nx, new Operacion(t));
                         a.ejecutar(local);
                         i++;
                     }

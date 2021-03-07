@@ -292,7 +292,7 @@ namespace CompiPascal.Analizador
 
             function_call.Rule 
                 = identificador + pizq + pder + ptcoma
-                | identificador + pizq + parametros_llamada+ pder + ptcoma
+                | identificador + pizq + parametros_llamada + pder + ptcoma
                 ;
 
             parametros_llamada.Rule

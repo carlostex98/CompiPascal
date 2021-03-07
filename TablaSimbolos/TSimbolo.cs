@@ -67,6 +67,13 @@ namespace CompiPascal.TablaSimbolos
                 //this.variables[nombre] = sb;
                 Simbolo s;
                 this.variables.TryGetValue(nombre, out s);
+
+                if (s == null)
+                {
+                    //variable no definida
+
+                }
+
                 s.setValor(sb);
                 this.variables[nombre] = s;
                 return true;

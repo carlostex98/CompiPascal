@@ -159,10 +159,48 @@ namespace CompiPascal.Analizador
             {
                 return new Funcion(ps.ChildNodes[1].Token.ValueString, evaluar_general(ps.ChildNodes[5]), null);
             }
+            else
+            {
+                //funcion con parametros
+                return new Funcion(ps.ChildNodes[1].Token.ValueString, evaluar_general(ps.ChildNodes[6]), evalParamDec(ps.ChildNodes[3]));
+            }
 
-
-            return null;
+            //return null;
         }
+
+
+        public LinkedList<Declaracion> evalParamDec(ParseTreeNode ps)
+        {
+
+            if (ps.ChildNodes.Count == 5)
+            {
+                // mas listas
+                Declaracion ts = new Declaracion(listaVar(ps.ChildNodes[0]), calcularTipo(ps.ChildNodes[2].ChildNodes[0].Token.ValueString), null);
+                LinkedList<Declaracion> temporal = new LinkedList<Declaracion>();
+                temporal.AddLast(ts);
+
+                LinkedList<Declaracion> t1 = new LinkedList<Declaracion>(evalParamDec(ps.ChildNodes[4]));
+
+                foreach (Declaracion t in t1)
+                {
+                    temporal.AddLast(t);
+                }
+
+                return temporal;
+            }
+            else
+            {
+                //un elemento
+                Declaracion ts = new Declaracion(listaVar(ps.ChildNodes[0]), calcularTipo(ps.ChildNodes[2].ChildNodes[0].Token.ValueString), null);
+                LinkedList<Declaracion> temporal = new LinkedList<Declaracion>();
+                temporal.AddLast(ts);
+                return temporal;
+            }
+
+            
+        }
+
+
 
         public Instruccion declaracionVariable(ParseTreeNode ps)
         {
@@ -311,9 +349,41 @@ namespace CompiPascal.Analizador
             {
                 return new CallFuncion(ps.ChildNodes[0].Token.ValueString, null);
             }
+            else
+            {
+                //con parametros
+                return new CallFuncion(ps.ChildNodes[0].Token.ValueString, evalParametrosCall(ps.ChildNodes[2]));
+            }
 
-            return null;
+            //return null;
         }
+
+        public LinkedList<Operacion> evalParametrosCall(ParseTreeNode ps)
+        {
+            if (ps.ChildNodes.Count == 3)
+            {
+                LinkedList<Operacion> temporal = new LinkedList<Operacion>();
+                temporal.AddLast(evalOpr(ps.ChildNodes[0]));
+
+                LinkedList<Operacion> t1 = new LinkedList<Operacion>(evalParametrosCall(ps.ChildNodes[2]));
+                foreach (Operacion item in t1)
+                {
+                    temporal.AddLast(item);
+                }
+                return temporal;
+
+            }
+            else
+            {
+                LinkedList<Operacion> temporal = new LinkedList<Operacion>();
+                temporal.AddLast(evalOpr(ps.ChildNodes[0]));
+                return temporal;
+            }
+
+
+            //return null;
+        }
+
 
 
         public Instruccion evalFor(ParseTreeNode ps)
