@@ -38,8 +38,44 @@ namespace CompiPascal.Instrucciones
 
             if (opr == null)
             {
-                //valor nulo
-                //this.valor = (Primitivo)this.opr.ejecutar(ts);
+                //valor nulo, sele asigna el tipo
+                if (tip == Simbolo.tipo.STRING)
+                {
+                    Simbolo ex = new Simbolo(nombre, tip, new Primitivo(Primitivo.tipo_val.CADENA, null));
+
+                    foreach (string t in nombres)
+                    {
+                        ts.agregar(t, ex);
+                    }
+                }
+                else if (tip == Simbolo.tipo.INTEGER)
+                {
+                    Simbolo ex = new Simbolo(nombre, tip, new Primitivo(Primitivo.tipo_val.INT, null));
+
+                    foreach (string t in nombres)
+                    {
+                        ts.agregar(t, ex);
+                    }
+                }
+                else if (tip == Simbolo.tipo.REAL)
+                {
+                    Simbolo ex = new Simbolo(nombre, tip, new Primitivo(Primitivo.tipo_val.DECIMAL, null));
+
+                    foreach (string t in nombres)
+                    {
+                        ts.agregar(t, ex);
+                    }
+                }
+                else if (tip == Simbolo.tipo.BOOLEAN)
+                {
+                    Simbolo ex = new Simbolo(nombre, tip, new Primitivo(Primitivo.tipo_val.INT, null));
+
+                    foreach (string t in nombres)
+                    {
+                        ts.agregar(t, ex);
+                    }
+                }
+
 
                 foreach (string t in nombres)
                 {

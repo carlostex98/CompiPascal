@@ -40,7 +40,7 @@ namespace CompiPascal.Instrucciones
                     final.AddLast((Primitivo)p.ejecutar(local));
                 }
 
-                System.Diagnostics.Debug.WriteLine(f.retornarVars().Count);
+                //System.Diagnostics.Debug.WriteLine(f.retornarVars().Count);
 
                 foreach (Declaracion t in f.retornarVars())
                 {
