@@ -41,7 +41,15 @@ namespace CompiPascal.Instrucciones
 
                 foreach (Instruccion ins in listaInstrucciones)
                 {
-                    ins.ejecutar(tablaLocal);
+                    
+                    Retorno r = (Retorno)ins.ejecutar(tablaLocal);
+                    if (r != null)
+                    {
+                        if (r.t_val == Retorno.tipoRetorno.EXIT)
+                        {
+                            return r;
+                        }
+                    }
                 }
             }
             else
@@ -53,7 +61,14 @@ namespace CompiPascal.Instrucciones
 
                     foreach (Instruccion ins in listaInstruccionesElse)
                     {
-                        ins.ejecutar(tablaLocal);
+                        Retorno r = (Retorno)ins.ejecutar(tablaLocal);
+                        if (r != null)
+                        {
+                            if (r.t_val == Retorno.tipoRetorno.EXIT)
+                            {
+                                return r;
+                            }
+                        }
                     }
                 }
             }

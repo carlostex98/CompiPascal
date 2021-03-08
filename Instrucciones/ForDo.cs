@@ -39,7 +39,14 @@ namespace CompiPascal.Instrucciones
             {
                 foreach (Instruccion t in listaInstrucciones)
                 {
-                    t.ejecutar(tablaLocal);
+                    Retorno r = (Retorno)t.ejecutar(tablaLocal);
+                    if (r != null)
+                    {
+                        if (r.t_val == Retorno.tipoRetorno.EXIT)
+                        {
+                            return r;
+                        }
+                    }
                 }
 
 

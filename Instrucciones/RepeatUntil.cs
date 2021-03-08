@@ -28,9 +28,16 @@ namespace CompiPascal.Instrucciones
             {
                 foreach (Instruccion ins in listaInstrucciones)
                 {
+                    Retorno r = (Retorno)ins.ejecutar(tablaLocal);
+                    if (r != null)
+                    {
+                        if (r.t_val == Retorno.tipoRetorno.EXIT)
+                        {
+                            return r;
+                        }
+                    }
                     ins.ejecutar(tablaLocal);
                 }
-                local_cond = (Primitivo)condicion.ejecutar(ts);
 
             } while ((Boolean)local_cond.valor);
 

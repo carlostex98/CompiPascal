@@ -30,7 +30,8 @@ namespace CompiPascal.Instrucciones
             UNICO,
             MODULO,
             EQUIVALENCIA,
-            ACCESO
+            ACCESO,
+            FUNCION_RETORNO
         }
 
         private Tipo_operacion tipo;
@@ -39,6 +40,8 @@ namespace CompiPascal.Instrucciones
         private Object valor; //pendiente eliminar
         private Primitivo val;
         private Acceso acc;
+
+        private CallFuncion func;
        
         // maneja todas
         public Operacion(Operacion operadorIzq, Operacion operadorDer, Tipo_operacion tipo)
@@ -67,6 +70,12 @@ namespace CompiPascal.Instrucciones
             this.acc = a;
         }
 
+        public Operacion(CallFuncion cs)
+        {
+            this.func = cs;
+            this.tipo = Tipo_operacion.FUNCION_RETORNO;
+        }
+
 
         //retorna simbolo
 
@@ -84,6 +93,13 @@ namespace CompiPascal.Instrucciones
             {
                 Primitivo p = (Primitivo)acc.ejecutar(ts);
                 return p;
+            }
+
+            if (tipo == Tipo_operacion.FUNCION_RETORNO)
+            {
+                //Primitivo p = (Primitivo)acc.ejecutar(ts);
+                Retorno n = (Retorno)func.ejecutar(ts);
+                return (Primitivo)n.valor;
             }
 
 

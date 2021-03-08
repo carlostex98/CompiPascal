@@ -6,7 +6,7 @@ using CompiPascal.TablaSimbolos;
 
 namespace CompiPascal.Instrucciones
 {
-    class CallFuncion : Instruccion
+    public class CallFuncion : Instruccion
     {
 
         private string nombre;
@@ -83,23 +83,22 @@ namespace CompiPascal.Instrucciones
 
                     //ya etsn las variables y asignaciones en la llamada
 
-                    foreach (Instruccion ins in f.retornarInstrucciones())
-                    {
-                        ins.ejecutar(local);
-                    }
-
                 }
 
             }
-            else
-            {
-                foreach (Instruccion ins in f.retornarInstrucciones())
-                {
-                    ins.ejecutar(local);
-                }
-            }
-
             
+
+            foreach (Instruccion ins in f.retornarInstrucciones())
+            {
+                Retorno r = (Retorno)ins.ejecutar(local);
+                if (r != null)
+                {
+                    if (r.t_val == Retorno.tipoRetorno.EXIT)
+                    {
+                        return r;
+                    }
+                }
+            }
 
             return null;
         }

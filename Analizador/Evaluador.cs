@@ -335,8 +335,11 @@ namespace CompiPascal.Analizador
             }
             else if (aux.Term.Name == "function_call")
             {
-                //return new CallFuncion(,);
                 return evalCall(aux);
+            }
+            else if (aux.Term.Name == "Exit_")
+            {
+                return new Exit(evalOpr(aux.ChildNodes[2]));
             }
 
             return null;
@@ -345,7 +348,7 @@ namespace CompiPascal.Analizador
         
         public Instruccion evalCall(ParseTreeNode ps)
         {
-            if (ps.ChildNodes.Count == 4)
+            if (ps.ChildNodes.Count == 3)
             {
                 return new CallFuncion(ps.ChildNodes[0].Token.ValueString, null);
             }
@@ -575,12 +578,30 @@ namespace CompiPascal.Analizador
                     Acceso a = new Acceso(aux.Token.Value.ToString());
                     return new Operacion(a);
                 }
+                else if (aux.Term.Name == "function_call")
+                {
+                    //Primitivo p = new Primitivo(Primitivo.tipo_val.CADENA, (object)false);
+                    return evalCallOp(aux);
+                }
 
             }
 
             return null;
         }
 
+
+        public Operacion evalCallOp(ParseTreeNode ps)
+        {
+            if (ps.ChildNodes.Count == 3)
+            {
+                return new Operacion(new CallFuncion(ps.ChildNodes[0].Token.ValueString, null));
+            }
+            else
+            {
+                //con parametros
+                return new Operacion(new CallFuncion(ps.ChildNodes[0].Token.ValueString, evalParametrosCall(ps.ChildNodes[2])));
+            }
+        }
 
 
  

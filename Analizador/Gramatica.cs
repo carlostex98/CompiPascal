@@ -128,6 +128,7 @@ namespace CompiPascal.Analizador
             NonTerminal lista_instr = new NonTerminal("lista_instr");
             NonTerminal bloque_inst = new NonTerminal("bloque_inst");
             NonTerminal casos_lista = new NonTerminal("casos_lista");
+            NonTerminal Exit_ = new NonTerminal("Exit_");
 
             NonTerminal super_instr = new NonTerminal("super_instr");
 
@@ -201,12 +202,17 @@ namespace CompiPascal.Analizador
             instr_normal.Rule
                 = if_then
                 | cases
-                | function_call
+                | function_call + ptcoma
                 | while_do
                 | repeat_until
                 | for_do
                 | print_
                 | redefinir
+                | Exit_
+                ;
+
+            Exit_.Rule
+                = exit_ + pizq + expresion + pder + ptcoma
                 ;
 
             redefinir.Rule
@@ -291,8 +297,8 @@ namespace CompiPascal.Analizador
             asignacion.Rule = identificador + dpunto + igual + expresion;
 
             function_call.Rule 
-                = identificador + pizq + pder + ptcoma
-                | identificador + pizq + parametros_llamada + pder + ptcoma
+                = identificador + pizq + pder
+                | identificador + pizq + parametros_llamada + pder
                 ;
 
             parametros_llamada.Rule
