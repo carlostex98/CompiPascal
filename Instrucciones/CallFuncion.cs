@@ -97,6 +97,7 @@ namespace CompiPascal.Instrucciones
                     {
                         return r;
                     }
+                    //break y continue deben arrojar error
                 }
             }
 

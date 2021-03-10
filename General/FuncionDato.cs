@@ -11,12 +11,16 @@ namespace CompiPascal.General
         private LinkedList<Instruccion> listaInstrucciones;
         private LinkedList<Declaracion> variables;
         private string nombre;
+        public enum tipoF { FUNCION, PROCEDIMINETO };
 
-        public FuncionDato(string n, LinkedList<Instruccion> lst, LinkedList<Declaracion> vars)
+        private tipoF tipo;
+
+        public FuncionDato(string n, LinkedList<Instruccion> lst, LinkedList<Declaracion> vars, tipoF t)
         {
             this.nombre = n;
             this.listaInstrucciones = lst;
             this.variables = vars;
+            this.tipo = t;
         }
 
 

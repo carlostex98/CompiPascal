@@ -21,6 +21,7 @@ namespace CompiPascal.Instrucciones
         public Object ejecutar(TSimbolo ts) 
         {
             Primitivo condres = (Primitivo)condicion.ejecutar(ts);
+            bool br = false;
 
             while ((Boolean)(condres.valor))
             {
@@ -35,7 +36,21 @@ namespace CompiPascal.Instrucciones
                         {
                             return r;
                         }
+                        else if (r.t_val == Retorno.tipoRetorno.BREAK)
+                        {
+                            br = true;
+                            break;
+                        }
+                        else if (r.t_val == Retorno.tipoRetorno.CONTINUE)
+                        {
+                            break;
+                        }
                     }
+                }
+
+                if (br)
+                {
+                    break;
                 }
 
                 condres = (Primitivo)condicion.ejecutar(ts);

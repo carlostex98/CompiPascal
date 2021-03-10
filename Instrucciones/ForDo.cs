@@ -34,6 +34,9 @@ namespace CompiPascal.Instrucciones
             Primitivo z = x.getValor();
             double a = Convert.ToDouble(z.valor);
 
+            bool br = false;
+            //bool ct = false;
+
 
             while (a!=b)
             {
@@ -46,7 +49,21 @@ namespace CompiPascal.Instrucciones
                         {
                             return r;
                         }
+                        else if (r.t_val == Retorno.tipoRetorno.BREAK)
+                        {
+                            br = true;
+                        }
+                        else if (r.t_val == Retorno.tipoRetorno.CONTINUE)
+                        {
+                            break;
+                            //rompe el ciclo de instrucciones y vuelve a evaluar la condicion
+                        }
                     }
+                }
+
+                if (br)
+                {
+                    break;
                 }
 
 

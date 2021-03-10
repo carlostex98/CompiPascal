@@ -49,6 +49,11 @@ namespace CompiPascal.Instrucciones
                         {
                             return r;
                         }
+                        else if(r.t_val == Retorno.tipoRetorno.BREAK || r.t_val == Retorno.tipoRetorno.CONTINUE)
+                        {
+                            return r;
+                        }
+                        
                     }
                 }
             }
@@ -65,6 +70,10 @@ namespace CompiPascal.Instrucciones
                         if (r != null)
                         {
                             if (r.t_val == Retorno.tipoRetorno.EXIT)
+                            {
+                                return r;
+                            }
+                            else if (r.t_val == Retorno.tipoRetorno.BREAK || r.t_val == Retorno.tipoRetorno.CONTINUE)
                             {
                                 return r;
                             }

@@ -77,6 +77,9 @@ namespace CompiPascal.Analizador
 
             var to_ = ToTerm("to");
 
+            var break_ = ToTerm("break");
+            var continue_ = ToTerm("continue");
+
             var repeat_ = ToTerm("repeat");
             var until_ = ToTerm("until");
 
@@ -209,6 +212,9 @@ namespace CompiPascal.Analizador
                 | print_
                 | redefinir
                 | Exit_
+                | break_ + ptcoma
+                | continue_ + ptcoma
+                | declaracion
                 ;
 
             Exit_.Rule
@@ -249,7 +255,10 @@ namespace CompiPascal.Analizador
                 | case_ + expresion + of_ + casos_lista + else_ + lista_instr + end_ + ptcoma
                 ;
 
-            casos_lista.Rule = expresion + dpunto + lista_instr + casos_lista;
+            casos_lista.Rule 
+                = expresion + dpunto + lista_instr + casos_lista
+                | expresion + dpunto + lista_instr
+                ;
 
             while_do.Rule
                 = while_ + expresion + do_ + begin_ + lista_instr + end_ + ptcoma;

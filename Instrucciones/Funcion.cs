@@ -13,13 +13,15 @@ namespace CompiPascal.Instrucciones
         private LinkedList<Declaracion> variables;
         private string nombre;
         private TSimbolo auxiliar;
+        private FuncionDato.tipoF tipo;
 
 
-        public Funcion(string n, LinkedList<Instruccion> lst, LinkedList<Declaracion> vars)
+        public Funcion(string n, LinkedList<Instruccion> lst, LinkedList<Declaracion> vars, FuncionDato.tipoF t)
         {
             this.nombre = n;
             this.listaInstrucciones = lst;
             this.variables = vars;
+            this.tipo = t;
         }
 
 
@@ -28,7 +30,7 @@ namespace CompiPascal.Instrucciones
         public Object ejecutar(TSimbolo ts)
         {
             //se guarda en la singleton
-            FuncionDato g = new FuncionDato(nombre, listaInstrucciones, variables);
+            FuncionDato g = new FuncionDato(nombre, listaInstrucciones, variables, FuncionDato.tipoF.FUNCION);
             Maestro.Instance.guardarFuncion(nombre, g);
 
             return null;

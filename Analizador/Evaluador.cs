@@ -141,7 +141,8 @@ namespace CompiPascal.Analizador
                     return declaracionVariable(mx);
                     break;
                 case "procedimiento":
-                    // 
+                    // usa lo mismo que la funcion
+                    return evalProdDec(ps.ChildNodes[0]);
                     break;
                 case "main":
                     //                      main           listaInstr    
@@ -157,12 +158,28 @@ namespace CompiPascal.Analizador
         {
             if (ps.ChildNodes.Count == 8)
             {
-                return new Funcion(ps.ChildNodes[1].Token.ValueString, evaluar_general(ps.ChildNodes[5]), null);
+                return new Funcion(ps.ChildNodes[1].Token.ValueString, evaluar_general(ps.ChildNodes[5]), null, FuncionDato.tipoF.FUNCION);
             }
             else
             {
                 //funcion con parametros
-                return new Funcion(ps.ChildNodes[1].Token.ValueString, evaluar_general(ps.ChildNodes[6]), evalParamDec(ps.ChildNodes[3]));
+                return new Funcion(ps.ChildNodes[1].Token.ValueString, evaluar_general(ps.ChildNodes[6]), evalParamDec(ps.ChildNodes[3]), FuncionDato.tipoF.FUNCION);
+            }
+
+            //return null;
+        }
+
+
+        public Instruccion evalProdDec(ParseTreeNode ps)
+        {
+            if (ps.ChildNodes.Count == 8)
+            {
+                return new Funcion(ps.ChildNodes[1].Token.ValueString, evaluar_general(ps.ChildNodes[5]), null, FuncionDato.tipoF.PROCEDIMINETO);
+            }
+            else
+            {
+                //funcion con parametros
+                return new Funcion(ps.ChildNodes[1].Token.ValueString, evaluar_general(ps.ChildNodes[6]), evalParamDec(ps.ChildNodes[3]), FuncionDato.tipoF.PROCEDIMINETO);
             }
 
             //return null;
@@ -341,8 +358,69 @@ namespace CompiPascal.Analizador
             {
                 return new Exit(evalOpr(aux.ChildNodes[2]));
             }
+            else if (aux.Term.Name == "break")
+            {
+                return new Continue();
+            }
+            else if (aux.Term.Name == "continue")
+            {
+                return new Break();
+            }
+            else if (aux.Term.Name == "declaracion")
+            {
+                //ParseTreeNode mx = ps.ChildNodes[0];
+                return declaracionVariable(aux);
+            }
+            else if (aux.Term.Name == "cases")
+            {
+                //ParseTreeNode mx = ps.ChildNodes[0];
+                //return declaracionVariable(aux);
+                return evalSwitch(aux);
+            }
 
             return null;
+        }
+
+
+        public Instruccion evalSwitch(ParseTreeNode ps)
+        {
+            if (ps.ChildNodes.Count == 6)
+            {
+                return new Switch(evalOpr(ps.ChildNodes[1]), evalCaso(ps.ChildNodes[3]));
+            }
+            else
+            {
+                //tiene else
+                return new Switch(evalOpr(ps.ChildNodes[1]), evalCaso(ps.ChildNodes[3]), evaluar_general(ps.ChildNodes[5]));
+            }
+            //return null;
+        }
+
+
+        public LinkedList<Case> evalCaso(ParseTreeNode ps)
+        {
+            if (ps.ChildNodes.Count == 4)
+            {
+                LinkedList<Case> temporal = new LinkedList<Case>();
+                temporal.AddLast(new Case(evalOpr(ps.ChildNodes[0]), evaluar_general(ps.ChildNodes[2])));
+
+                LinkedList<Case> t1 = new LinkedList<Case>(evalCaso(ps.ChildNodes[3]));
+                foreach (Case item in t1)
+                {
+                    temporal.AddLast(item);
+                }
+
+                return temporal;
+
+            }
+            else
+            {
+                LinkedList<Case> temporal = new LinkedList<Case>();
+                temporal.AddLast(new Case(evalOpr(ps.ChildNodes[0]), evaluar_general(ps.ChildNodes[2])));
+                return temporal;
+            }
+
+            //return null;
         }
 
         
