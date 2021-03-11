@@ -30,7 +30,14 @@ namespace CompiPascal
             
             Evaluador eval = new Evaluador();
             eval.analizar_arbol(entrada.Text);
+            salida.Text = Maestro.Instance.getOutput();
+            
+            //salida.Text = salida.Text + Maestro.Instance.getMessages();
         }
 
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

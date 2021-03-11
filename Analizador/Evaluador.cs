@@ -54,7 +54,7 @@ namespace CompiPascal.Analizador
             {
                 //mandamos a llamar a los metodos de instrucciones
                 //Maestro.Instance.addMessage("Todo correcto");
-                //_ = this.generarImagen(raiz_grogram); //se usa el simbolo de descarte
+                _ = this.generarImagen(raiz_grogram);
 
                 this.evaluarInstrucciones(raiz_grogram.ChildNodes[0]);
 
@@ -132,8 +132,10 @@ namespace CompiPascal.Analizador
                     break;
                 case "programa":
                     //evaluamos la sentencia programa, solo hace un print a la consola virtual
-                    ParseTreeNode aux = ps.ChildNodes[1];
-                    Maestro.Instance.addOutput("PROGRAM " + aux.Token.ValueString);
+                    ParseTreeNode aux = ps.ChildNodes[0].ChildNodes[1];
+                    //Maestro.Instance.addOutput("PROGRAM " + aux.Token.ValueString);
+                    Operacion op = new Operacion(new Primitivo(Primitivo.tipo_val.CADENA, (object)("PROGRAM " + aux.Token.ValueString)));
+                    return new Writeln(op);
                     break;
                 case "declaracion":
                     //registramos en los simbolos, en este caso el contexto general

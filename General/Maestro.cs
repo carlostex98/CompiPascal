@@ -64,12 +64,10 @@ namespace CompiPascal.General
         {
             this.output = "";
             this.mensajes = "";
-            //this.instrucciones = new LinkedList<NodoAST>();
             this.grafo = "";
             this.contador = 0;
             this.errores = new LinkedList<Error>();
-            //this.funciones = new Dictionary<string, Funcion>();
-            //this.agregarNativas();  //agregamos las funciones nativas...
+            this.Funciones = new Dictionary<string, FuncionDato>();
         }
 
         private void getDot(ParseTreeNode raiz)

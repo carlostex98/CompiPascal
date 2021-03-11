@@ -161,7 +161,7 @@ namespace CompiPascal.Analizador
                 | main_
                 ;
 
-            programa.Rule = program_ + identificador;
+            programa.Rule = program_ + identificador + ptcoma;
 
             procedimiento.Rule
                 = procedure_ + identificador + pizq + pder + begin_ + lista_instr + end_ + ptcoma
