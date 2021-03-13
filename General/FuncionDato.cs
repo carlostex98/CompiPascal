@@ -12,15 +12,19 @@ namespace CompiPascal.General
         private LinkedList<Declaracion> variables;
         private string nombre;
         public enum tipoF { FUNCION, PROCEDIMINETO };
+        public enum tipoR {VOID, REAL, INTEGER, BOOLEAN, STRING };
 
-        private tipoF tipo;
 
-        public FuncionDato(string n, LinkedList<Instruccion> lst, LinkedList<Declaracion> vars, tipoF t)
+        public tipoF tipo;
+        public tipoR t_retorno;
+
+        public FuncionDato(string n, LinkedList<Instruccion> lst, LinkedList<Declaracion> vars, tipoF t, tipoR r)
         {
             this.nombre = n;
             this.listaInstrucciones = lst;
             this.variables = vars;
             this.tipo = t;
+            this.t_retorno = r;
         }
 
 

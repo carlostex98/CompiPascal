@@ -11,11 +11,16 @@ namespace CompiPascal.Instrucciones
     {
         private Operacion condicion;
         private LinkedList<Instruccion> listaInstrucciones;
+        private int linea;
+        private int columna;
 
-        public While(Operacion x, LinkedList<Instruccion> y)
+
+        public While(Operacion x, LinkedList<Instruccion> y, int ln, int cl)
         {
             this.condicion = x;
             this.listaInstrucciones = y;
+            this.linea = ln;
+            this.columna = cl;
         }
 
         public Object ejecutar(TSimbolo ts) 

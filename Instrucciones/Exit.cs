@@ -10,10 +10,14 @@ namespace CompiPascal.Instrucciones
     {
 
         private Operacion op;
+        private int linea;
+        private int columna;
 
-        public Exit(Operacion opr)
+        public Exit(Operacion opr, int ln, int cl)
         {
             this.op = opr;
+            this.linea = ln;
+            this.columna = cl;
         }
 
 

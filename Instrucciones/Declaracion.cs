@@ -14,22 +14,19 @@ namespace CompiPascal.Instrucciones
         private Operacion opr;
         private Simbolo.tipo tip;
         private LinkedList<string> nombres = new LinkedList<string>();
+        private int linea;
+        private int columna;
 
-        public Declaracion(string a, Simbolo.tipo t , Operacion op)
-        {
-            this.nombre = a;
-            this.opr = op;
-            this.tip = t;
-            this.nombres = null;
-        }
+        
 
-
-        public Declaracion(LinkedList<string> b, Simbolo.tipo t, Operacion op)
+        public Declaracion(LinkedList<string> b, Simbolo.tipo t, Operacion op, int ln, int cl)
         {
             //this.nombre = a;
             this.opr = op;
             this.tip = t;
             this.nombres = b;
+            this.linea = ln;
+            this.columna = cl;
         }
 
 
@@ -76,21 +73,75 @@ namespace CompiPascal.Instrucciones
                     }
                 }
 
-
-                foreach (string t in nombres)
-                {
-                    ts.agregar(t, (Simbolo)null);
-                }
                 
-                return null;
+            }
+            else
+            {
+
+                this.valor = (Primitivo)this.opr.ejecutar(ts);
+                //con variable definida
+                if (tip == Simbolo.tipo.STRING)
+                {
+                    if(valor.t_val != Primitivo.tipo_val.CADENA )
+                    {
+                        throw new Error(linea, columna, "Se recibió otro valor en variable tipo cadena", Error.Tipo_error.SINTACTICO);
+                    }
+
+
+                    Simbolo ex = new Simbolo(nombre, tip, new Primitivo(Primitivo.tipo_val.CADENA, (object)valor.valor));
+
+                    foreach (string t in nombres)
+                    {
+                        ts.agregar(t, ex);
+                    }
+                }
+                else if (tip == Simbolo.tipo.INTEGER)
+                {
+                    if (valor.t_val != Primitivo.tipo_val.INT && valor.t_val != Primitivo.tipo_val.DECIMAL)
+                    {
+                        throw new Error(linea, columna, "Se recibió otro valor en variable tipo entero", Error.Tipo_error.SINTACTICO);
+                    }
+
+
+                    Simbolo ex = new Simbolo(nombre, tip, new Primitivo(Primitivo.tipo_val.CADENA, (object)Convert.ToInt32(valor.valor)));
+
+                    foreach (string t in nombres)
+                    {
+                        ts.agregar(t, ex);
+                    }
+                }
+                else if (tip == Simbolo.tipo.REAL)
+                {
+                    if (valor.t_val != Primitivo.tipo_val.INT && valor.t_val != Primitivo.tipo_val.DECIMAL)
+                    {
+                        throw new Error(linea, columna, "Se recibió otro valor en variable tipo real", Error.Tipo_error.SINTACTICO);
+                    }
+
+
+                    Simbolo ex = new Simbolo(nombre, tip, new Primitivo(Primitivo.tipo_val.CADENA, (object)Convert.ToDouble(valor.valor)));
+
+                    foreach (string t in nombres)
+                    {
+                        ts.agregar(t, ex);
+                    }
+                }
+                else if (tip == Simbolo.tipo.BOOLEAN)
+                {
+                    if (valor.t_val != Primitivo.tipo_val.BOOLEANO)
+                    {
+                        throw new Error(linea, columna, "Se recibió otro valor en variable tipo booleano", Error.Tipo_error.SINTACTICO);
+                    }
+
+
+                    Simbolo ex = new Simbolo(nombre, tip, new Primitivo(Primitivo.tipo_val.CADENA, (object)Convert.ToBoolean(valor.valor)));
+
+                    foreach (string t in nombres)
+                    {
+                        ts.agregar(t, ex);
+                    }
+                }
             }
 
-            this.valor = (Primitivo)this.opr.ejecutar(ts);
-            Simbolo e = new Simbolo(nombre, tip, valor);
-            foreach (string t in nombres)
-            {
-                ts.agregar(t, e);
-            }
             return null;
         }
     }

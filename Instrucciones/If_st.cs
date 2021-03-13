@@ -12,21 +12,26 @@ namespace CompiPascal.Instrucciones
         private Operacion condicion;
         private LinkedList<Instruccion> listaInstrucciones;
         private LinkedList<Instruccion> listaInstruccionesElse;
+        private int linea;
+        private int columna;
 
-
-        public If_st(Operacion x, LinkedList<Instruccion> y)
+        public If_st(Operacion x, LinkedList<Instruccion> y, int ln, int cl)
         {
             this.condicion = x;
             this.listaInstrucciones = y;
             this.listaInstruccionesElse = null;
+            this.linea = ln;
+            this.columna = cl;
         }
 
 
-        public If_st(Operacion x, LinkedList<Instruccion> y, LinkedList<Instruccion> z)
+        public If_st(Operacion x, LinkedList<Instruccion> y, LinkedList<Instruccion> z, int ln, int cl)
         {
             this.condicion = x;
             this.listaInstrucciones = y;
             this.listaInstruccionesElse = z;
+            this.linea = ln;
+            this.columna = cl;
         }
 
 

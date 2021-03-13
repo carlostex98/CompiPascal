@@ -43,5 +43,10 @@ namespace CompiPascal.TablaSimbolos
             valor = v;
         }
 
+        public tipo GetTipo()
+        {
+            return this.Tipo;
+        }
+
     }
 }

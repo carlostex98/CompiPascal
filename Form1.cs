@@ -21,7 +21,7 @@ namespace CompiPascal
 
         private void button1_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine("eee");
+            //System.Diagnostics.Debug.WriteLine("eee");
             compile();
         }
 
@@ -31,7 +31,7 @@ namespace CompiPascal
             Evaluador eval = new Evaluador();
             eval.analizar_arbol(entrada.Text);
             salida.Text = Maestro.Instance.getOutput();
-            
+            Maestro.Instance.clear();
             //salida.Text = salida.Text + Maestro.Instance.getMessages();
         }
 

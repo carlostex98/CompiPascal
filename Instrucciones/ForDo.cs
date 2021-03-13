@@ -11,13 +11,16 @@ namespace CompiPascal.Instrucciones
         private LinkedList<Instruccion> listaInstrucciones;
         private Operacion val_limite;
         private Asignacion inicio;
+        private int linea;
+        private int columna;
 
-        public ForDo(Asignacion f, Operacion b, LinkedList<Instruccion> lst)
+        public ForDo(Asignacion f, Operacion b, LinkedList<Instruccion> lst, int ln, int cl)
         {
             this.inicio = f;
             this.val_limite = b;
             this.listaInstrucciones = lst;
-            
+            this.linea = ln;
+            this.columna = cl;
         }
 
 
@@ -70,13 +73,13 @@ namespace CompiPascal.Instrucciones
                 //se ejecuta el aumento
 
                 Primitivo s = new Primitivo(Primitivo.tipo_val.INT, (object)(1));
-                Acceso f = new Acceso(nomb_var);
+                Acceso f = new Acceso(nomb_var, linea, columna);
                 Operacion t1 = new Operacion(f);
                 Operacion t2 = new Operacion(s);
 
                 Operacion final = new Operacion(t1, t2, Operacion.Tipo_operacion.SUMA);
 
-                Asignacion asig = new Asignacion(nomb_var, final);
+                Asignacion asig = new Asignacion(nomb_var, final, linea, columna);
 
                 asig.ejecutar(tablaLocal);
 

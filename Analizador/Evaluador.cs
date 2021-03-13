@@ -63,8 +63,15 @@ namespace CompiPascal.Analizador
 
                 foreach(Instruccion t in instrucciones_globales)
                 {
-                    //ejecucion maestra
-                    _ = t.ejecutar(global);
+                    try
+                    {
+                        _ = t.ejecutar(global);
+                    }
+                    catch (Error x)
+                    {
+                        Maestro.Instance.addOutput(x.getDescripcion());
+                        //System.Diagnostics.Debug.WriteLine("eeeeeee");
+                    }
                 }
 
             }
@@ -135,7 +142,7 @@ namespace CompiPascal.Analizador
                     ParseTreeNode aux = ps.ChildNodes[0].ChildNodes[1];
                     //Maestro.Instance.addOutput("PROGRAM " + aux.Token.ValueString);
                     Operacion op = new Operacion(new Primitivo(Primitivo.tipo_val.CADENA, (object)("PROGRAM " + aux.Token.ValueString)));
-                    return new Writeln(op);
+                    return new Writeln(op, ps.ChildNodes[0].Token.Location.Line, ps.ChildNodes[0].Token.Location.Column);
                     break;
                 case "declaracion":
                     //registramos en los simbolos, en este caso el contexto general
@@ -150,7 +157,7 @@ namespace CompiPascal.Analizador
                     //                      main           listaInstr    
                     ParseTreeNode auxx = ps.ChildNodes[0].ChildNodes[1];
                     
-                    return new MainProgram(evaluar_general(auxx));
+                    return new MainProgram(evaluar_general(auxx), ps.ChildNodes[0].ChildNodes[0].Token.Location.Line, ps.ChildNodes[0].ChildNodes[0].Token.Location.Column);
             }
 
             return null;
@@ -158,17 +165,43 @@ namespace CompiPascal.Analizador
 
         public Instruccion evalFuncDec(ParseTreeNode ps)
         {
-            if (ps.ChildNodes.Count == 8)
+            if (ps.ChildNodes.Count == 11)
             {
-                return new Funcion(ps.ChildNodes[1].Token.ValueString, evaluar_general(ps.ChildNodes[5]), null, FuncionDato.tipoF.FUNCION);
+                return new Funcion(ps.ChildNodes[1].Token.ValueString, evaluar_general(ps.ChildNodes[8]), null, FuncionDato.tipoF.FUNCION, evaluarRet(ps.ChildNodes[5].ChildNodes[0].Token.ValueString),ps.ChildNodes[1].Token.Location.Line, ps.ChildNodes[1].Token.Location.Column);
             }
             else
             {
                 //funcion con parametros
-                return new Funcion(ps.ChildNodes[1].Token.ValueString, evaluar_general(ps.ChildNodes[6]), evalParamDec(ps.ChildNodes[3]), FuncionDato.tipoF.FUNCION);
+                //System.Diagnostics.Debug.WriteLine(ps.ChildNodes[6].ChildNodes[0].Token.ValueString);
+                return new Funcion(ps.ChildNodes[1].Token.ValueString, evaluar_general(ps.ChildNodes[9]), evalParamDec(ps.ChildNodes[3]), FuncionDato.tipoF.FUNCION, evaluarRet(ps.ChildNodes[6].ChildNodes[0].Token.ValueString), ps.ChildNodes[1].Token.Location.Line, ps.ChildNodes[1].Token.Location.Column);
             }
 
             //return null;
+        }
+
+        public FuncionDato.tipoR evaluarRet(string v)
+        {
+            if (v == "string")
+            {
+                return FuncionDato.tipoR.STRING;
+            }
+            else if (v == "integer")
+            {
+                return FuncionDato.tipoR.INTEGER;
+            }
+            else if (v == "real")
+            {
+                return FuncionDato.tipoR.REAL;
+            }
+            else if (v == "boolean")
+            {
+                return FuncionDato.tipoR.BOOLEAN;
+            }
+            else if (v == "void")
+            {
+                return FuncionDato.tipoR.VOID;
+            }
+            return FuncionDato.tipoR.STRING;
         }
 
 
@@ -176,12 +209,12 @@ namespace CompiPascal.Analizador
         {
             if (ps.ChildNodes.Count == 8)
             {
-                return new Funcion(ps.ChildNodes[1].Token.ValueString, evaluar_general(ps.ChildNodes[5]), null, FuncionDato.tipoF.PROCEDIMINETO);
+                return new Funcion(ps.ChildNodes[1].Token.ValueString, evaluar_general(ps.ChildNodes[5]), null, FuncionDato.tipoF.PROCEDIMINETO, FuncionDato.tipoR.VOID, ps.ChildNodes[1].Token.Location.Line, ps.ChildNodes[1].Token.Location.Column);
             }
             else
             {
                 //funcion con parametros
-                return new Funcion(ps.ChildNodes[1].Token.ValueString, evaluar_general(ps.ChildNodes[6]), evalParamDec(ps.ChildNodes[3]), FuncionDato.tipoF.PROCEDIMINETO);
+                return new Funcion(ps.ChildNodes[1].Token.ValueString, evaluar_general(ps.ChildNodes[6]), evalParamDec(ps.ChildNodes[3]), FuncionDato.tipoF.PROCEDIMINETO, FuncionDato.tipoR.VOID,ps.ChildNodes[1].Token.Location.Line, ps.ChildNodes[1].Token.Location.Column);
             }
 
             //return null;
@@ -193,8 +226,12 @@ namespace CompiPascal.Analizador
 
             if (ps.ChildNodes.Count == 5)
             {
+
+                int ln = ps.ChildNodes[2].ChildNodes[0].Token.Location.Line;
+                int cl = ps.ChildNodes[2].ChildNodes[0].Token.Location.Column;
+
                 // mas listas
-                Declaracion ts = new Declaracion(listaVar(ps.ChildNodes[0]), calcularTipo(ps.ChildNodes[2].ChildNodes[0].Token.ValueString), null);
+                Declaracion ts = new Declaracion(listaVar(ps.ChildNodes[0]), calcularTipo(ps.ChildNodes[2].ChildNodes[0].Token.ValueString), null, ln, cl);
                 LinkedList<Declaracion> temporal = new LinkedList<Declaracion>();
                 temporal.AddLast(ts);
 
@@ -209,8 +246,11 @@ namespace CompiPascal.Analizador
             }
             else
             {
+                int ln = ps.ChildNodes[2].ChildNodes[0].Token.Location.Line;
+                int cl = ps.ChildNodes[2].ChildNodes[0].Token.Location.Column;
+
                 //un elemento
-                Declaracion ts = new Declaracion(listaVar(ps.ChildNodes[0]), calcularTipo(ps.ChildNodes[2].ChildNodes[0].Token.ValueString), null);
+                Declaracion ts = new Declaracion(listaVar(ps.ChildNodes[0]), calcularTipo(ps.ChildNodes[2].ChildNodes[0].Token.ValueString), null, ln,cl);
                 LinkedList<Declaracion> temporal = new LinkedList<Declaracion>();
                 temporal.AddLast(ts);
                 return temporal;
@@ -226,16 +266,18 @@ namespace CompiPascal.Analizador
             if (ps.ChildNodes[0].Term.Name == "var")
             {
                 LinkedList<string> nombres = listaVar(ps.ChildNodes[1]);
-                
+                int ln = ps.ChildNodes[3].ChildNodes[0].Token.Location.Line;
+                int cl = ps.ChildNodes[3].ChildNodes[0].Token.Location.Column;
+
                 //variable
                 if (ps.ChildNodes.Count == 5)
                 {
                     //System.Diagnostics.Debug.WriteLine(ps.ChildNodes[3].ChildNodes[0].Term.Name);
-                    return new Declaracion(nombres, calcularTipo(ps.ChildNodes[3].ChildNodes[0].Term.Name), (Operacion)null );
+                    return new Declaracion(nombres, calcularTipo(ps.ChildNodes[3].ChildNodes[0].Term.Name), (Operacion)null , ln, cl);
                 }
                 else{
                     //variable inicializada
-                    return new Declaracion(nombres, calcularTipo(ps.ChildNodes[3].ChildNodes[0].Term.Name), evalOpr(ps.ChildNodes[5]));
+                    return new Declaracion(nombres, calcularTipo(ps.ChildNodes[3].ChildNodes[0].Term.Name), evalOpr(ps.ChildNodes[5]), ln, cl);
                 }
             }
 
@@ -325,7 +367,7 @@ namespace CompiPascal.Analizador
             ParseTreeNode aux = ps.ChildNodes[0];
             if (aux.Term.Name == "print")
             {
-                return new Writeln(evalOpr(aux.ChildNodes[2]));
+                return new Writeln(evalOpr(aux.ChildNodes[2]), aux.ChildNodes[0].Token.Location.Line, aux.ChildNodes[0].Token.Location.Column);
             } 
             else if (aux.Term.Name == "if_then")
             {
@@ -338,7 +380,7 @@ namespace CompiPascal.Analizador
                 //evalualos la expresion
                 //System.Diagnostics.Debug.WriteLine(aux.ChildNodes[0].Token.ValueString);
                 //return evalIf(aux);
-                return new Asignacion(aux.ChildNodes[0].Token.ValueString, evalOpr(aux.ChildNodes[3]));
+                return new Asignacion(aux.ChildNodes[0].Token.ValueString, evalOpr(aux.ChildNodes[3]), aux.ChildNodes[0].Token.Location.Line, aux.ChildNodes[0].Token.Location.Column);
             }
             else if (aux.Term.Name == "while_do")
             {
@@ -350,7 +392,7 @@ namespace CompiPascal.Analizador
             }
             else if (aux.Term.Name == "repeat_until")
             {
-                return new RepeatUntil(evaluar_general(aux.ChildNodes[1]), evalOpr(aux.ChildNodes[3]));
+                return new RepeatUntil(evaluar_general(aux.ChildNodes[1]), evalOpr(aux.ChildNodes[3]), aux.ChildNodes[0].Token.Location.Line, aux.ChildNodes[0].Token.Location.Column);
             }
             else if (aux.Term.Name == "function_call")
             {
@@ -358,15 +400,15 @@ namespace CompiPascal.Analizador
             }
             else if (aux.Term.Name == "Exit_")
             {
-                return new Exit(evalOpr(aux.ChildNodes[2]));
+                return new Exit(evalOpr(aux.ChildNodes[2]), aux.ChildNodes[0].Token.Location.Line, aux.ChildNodes[0].Token.Location.Column);
             }
             else if (aux.Term.Name == "break")
             {
-                return new Continue();
+                return new Break(aux.Token.Location.Line, aux.Token.Location.Column);
             }
             else if (aux.Term.Name == "continue")
             {
-                return new Break();
+                return new Continue(aux.Token.Location.Line, aux.Token.Location.Column);
             }
             else if (aux.Term.Name == "declaracion")
             {
@@ -388,12 +430,12 @@ namespace CompiPascal.Analizador
         {
             if (ps.ChildNodes.Count == 6)
             {
-                return new Switch(evalOpr(ps.ChildNodes[1]), evalCaso(ps.ChildNodes[3]));
+                return new Switch(evalOpr(ps.ChildNodes[1]), evalCaso(ps.ChildNodes[3]), ps.ChildNodes[0].Token.Location.Line, ps.ChildNodes[0].Token.Location.Column);
             }
             else
             {
                 //tiene else
-                return new Switch(evalOpr(ps.ChildNodes[1]), evalCaso(ps.ChildNodes[3]), evaluar_general(ps.ChildNodes[5]));
+                return new Switch(evalOpr(ps.ChildNodes[1]), evalCaso(ps.ChildNodes[3]), evaluar_general(ps.ChildNodes[5]), ps.ChildNodes[0].Token.Location.Line, ps.ChildNodes[0].Token.Location.Column);
             }
             //return null;
         }
@@ -404,7 +446,7 @@ namespace CompiPascal.Analizador
             if (ps.ChildNodes.Count == 4)
             {
                 LinkedList<Case> temporal = new LinkedList<Case>();
-                temporal.AddLast(new Case(evalOpr(ps.ChildNodes[0]), evaluar_general(ps.ChildNodes[2])));
+                temporal.AddLast(new Case(evalOpr(ps.ChildNodes[0]), evaluar_general(ps.ChildNodes[2]), ps.ChildNodes[1].Token.Location.Line, ps.ChildNodes[1].Token.Location.Column));
 
                 LinkedList<Case> t1 = new LinkedList<Case>(evalCaso(ps.ChildNodes[3]));
                 foreach (Case item in t1)
@@ -418,7 +460,7 @@ namespace CompiPascal.Analizador
             else
             {
                 LinkedList<Case> temporal = new LinkedList<Case>();
-                temporal.AddLast(new Case(evalOpr(ps.ChildNodes[0]), evaluar_general(ps.ChildNodes[2])));
+                temporal.AddLast(new Case(evalOpr(ps.ChildNodes[0]), evaluar_general(ps.ChildNodes[2]), ps.ChildNodes[1].Token.Location.Line, ps.ChildNodes[1].Token.Location.Column));
                 return temporal;
             }
 
@@ -430,12 +472,12 @@ namespace CompiPascal.Analizador
         {
             if (ps.ChildNodes.Count == 3)
             {
-                return new CallFuncion(ps.ChildNodes[0].Token.ValueString, null);
+                return new CallFuncion(ps.ChildNodes[0].Token.ValueString, null, ps.ChildNodes[0].Token.Location.Line, ps.ChildNodes[0].Token.Location.Column);
             }
             else
             {
                 //con parametros
-                return new CallFuncion(ps.ChildNodes[0].Token.ValueString, evalParametrosCall(ps.ChildNodes[2]));
+                return new CallFuncion(ps.ChildNodes[0].Token.ValueString, evalParametrosCall(ps.ChildNodes[2]), ps.ChildNodes[0].Token.Location.Line, ps.ChildNodes[0].Token.Location.Column);
             }
 
             //return null;
@@ -474,15 +516,15 @@ namespace CompiPascal.Analizador
             if (ps.ChildNodes.Count == 9)
             {
 
-                Asignacion t1 = new Asignacion(ps.ChildNodes[1].Token.ValueString, evalOpr(ps.ChildNodes[4]));
+                Asignacion t1 = new Asignacion(ps.ChildNodes[1].Token.ValueString, evalOpr(ps.ChildNodes[4]), ps.ChildNodes[1].Token.Location.Line, ps.ChildNodes[1].Token.Location.Column);
                 LinkedList<Instruccion> t3 = new LinkedList<Instruccion>();
                 t3.AddLast(unitaria(ps.ChildNodes[8]));
-                return new ForDo(t1, evalOpr(ps.ChildNodes[6]), t3);
+                return new ForDo(t1, evalOpr(ps.ChildNodes[6]), t3, ps.ChildNodes[1].Token.Location.Line, ps.ChildNodes[1].Token.Location.Column);
             }
             else
             {
-                Asignacion t1 = new Asignacion(ps.ChildNodes[1].Token.ValueString, evalOpr(ps.ChildNodes[4]));
-                return new ForDo(t1, evalOpr(ps.ChildNodes[6]), evaluar_general(ps.ChildNodes[9]));
+                Asignacion t1 = new Asignacion(ps.ChildNodes[1].Token.ValueString, evalOpr(ps.ChildNodes[4]), ps.ChildNodes[1].Token.Location.Line, ps.ChildNodes[1].Token.Location.Column);
+                return new ForDo(t1, evalOpr(ps.ChildNodes[6]), evaluar_general(ps.ChildNodes[9]), ps.ChildNodes[1].Token.Location.Line, ps.ChildNodes[1].Token.Location.Column);
             }
 
             //return null;
@@ -493,7 +535,7 @@ namespace CompiPascal.Analizador
         {
 
             
-            return new While(evalOpr(ps.ChildNodes[1]), evaluar_general(ps.ChildNodes[4]));
+            return new While(evalOpr(ps.ChildNodes[1]), evaluar_general(ps.ChildNodes[4]), ps.ChildNodes[0].Token.Location.Line, ps.ChildNodes[0].Token.Location.Column);
 
             //return null;
         }
@@ -502,13 +544,13 @@ namespace CompiPascal.Analizador
             if (ps.ChildNodes.Count == 4)
             {
                 
-                return new If_st(evalOpr(ps.ChildNodes[1]), evalBloque(ps.ChildNodes[3]));
+                return new If_st(evalOpr(ps.ChildNodes[1]), evalBloque(ps.ChildNodes[3]), ps.ChildNodes[0].Token.Location.Line, ps.ChildNodes[0].Token.Location.Column);
             }
             else
             {
                 //tiene else
                 
-                return new If_st(evalOpr(ps.ChildNodes[1]), evalBloque(ps.ChildNodes[3]), evalBloque(ps.ChildNodes[5]));
+                return new If_st(evalOpr(ps.ChildNodes[1]), evalBloque(ps.ChildNodes[3]), evalBloque(ps.ChildNodes[5]), ps.ChildNodes[0].Token.Location.Line, ps.ChildNodes[0].Token.Location.Column);
 
             }
 
@@ -655,7 +697,7 @@ namespace CompiPascal.Analizador
                 else if (aux.Term.Name == "identificador")
                 {
                     //Primitivo p = new Primitivo(Primitivo.tipo_val.CADENA, (object)false);
-                    Acceso a = new Acceso(aux.Token.Value.ToString());
+                    Acceso a = new Acceso(aux.Token.Value.ToString(), aux.Token.Location.Line, aux.Token.Location.Column);
                     return new Operacion(a);
                 }
                 else if (aux.Term.Name == "function_call")
@@ -674,12 +716,12 @@ namespace CompiPascal.Analizador
         {
             if (ps.ChildNodes.Count == 3)
             {
-                return new Operacion(new CallFuncion(ps.ChildNodes[0].Token.ValueString, null));
+                return new Operacion(new CallFuncion(ps.ChildNodes[0].Token.ValueString, null, ps.ChildNodes[0].Token.Location.Line, ps.ChildNodes[0].Token.Location.Column));
             }
             else
             {
                 //con parametros
-                return new Operacion(new CallFuncion(ps.ChildNodes[0].Token.ValueString, evalParametrosCall(ps.ChildNodes[2])));
+                return new Operacion(new CallFuncion(ps.ChildNodes[0].Token.ValueString, evalParametrosCall(ps.ChildNodes[2]), ps.ChildNodes[0].Token.Location.Line, ps.ChildNodes[0].Token.Location.Column));
             }
         }
 

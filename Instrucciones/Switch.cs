@@ -11,20 +11,26 @@ namespace CompiPascal.Instrucciones
         private LinkedList<Case> casos;
         private LinkedList<Instruccion> instr_else;
         private Operacion izquierdo;
+        private int linea;
+        private int columna;
 
-        public Switch(Operacion i, LinkedList<Case> cs, LinkedList<Instruccion> ins)
+        public Switch(Operacion i, LinkedList<Case> cs, LinkedList<Instruccion> ins, int ln, int cl)
         {
             this.izquierdo = i;
             this.casos = cs;
             this.instr_else = ins;
+            this.linea = ln;
+            this.columna = cl;
         }
 
 
-        public Switch(Operacion i, LinkedList<Case> cs)
+        public Switch(Operacion i, LinkedList<Case> cs, int ln, int cl)
         {
             this.izquierdo = i;
             this.casos = cs;
             this.instr_else = null;
+            this.linea = ln;
+            this.columna = cl;
         }
 
 

@@ -89,7 +89,7 @@ namespace CompiPascal.Analizador
             var string_ = ToTerm("string");
             var boolean_ = ToTerm("boolean");
             var real_ = ToTerm("real");
-
+            var void_ = ToTerm("void");
 
             var and_ = ToTerm("and");
             var or_ = ToTerm("or");
@@ -97,6 +97,7 @@ namespace CompiPascal.Analizador
             var true_ = ToTerm("true");
             var false_ = ToTerm("false");
             var for_ = ToTerm("for");
+            
 
 
             RegisterOperators(1, mas, menos);
@@ -139,6 +140,8 @@ namespace CompiPascal.Analizador
 
             NonTerminal redefinir = new NonTerminal("redefinir");
 
+            NonTerminal ret_func = new NonTerminal("ret_func");
+
 
             //NonTerminal  = new NonTerminal("");
             #endregion
@@ -169,8 +172,8 @@ namespace CompiPascal.Analizador
                 ;
 
             funcion.Rule
-                = function_ + identificador + pizq + pder + begin_ + lista_instr + end_ + ptcoma
-                | function_ + identificador + pizq + parametros + pder + begin_ + lista_instr + end_ + ptcoma
+                = function_ + identificador + pizq + pder + dpunto + ret_func + ptcoma + begin_ + lista_instr + end_ + ptcoma
+                | function_ + identificador + pizq + parametros + pder + dpunto + ret_func + ptcoma + begin_ + lista_instr + end_ + ptcoma
                 ;
 
             parametros.Rule
@@ -181,6 +184,14 @@ namespace CompiPascal.Analizador
             list_vp.Rule
                 = identificador + coma + list_vp
                 | identificador
+                ;
+
+            ret_func.Rule
+                = string_
+                | integer_
+                | boolean_
+                | real_
+                | void_
                 ;
 
             type_var.Rule

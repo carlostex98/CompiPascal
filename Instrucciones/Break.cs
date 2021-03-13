@@ -8,9 +8,13 @@ namespace CompiPascal.Instrucciones
     class Break:Instruccion
     {
 
-        public Break()
-        {
+        private int linea;
+        private int columna;
 
+        public Break(int ln, int cl)
+        {
+            this.linea = ln;
+            this.columna = cl;
         }
 
         public Object ejecutar(TSimbolo ts)

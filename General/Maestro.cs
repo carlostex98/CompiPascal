@@ -41,6 +41,15 @@ namespace CompiPascal.General
             return this.errores;
         }
 
+        public bool verificarFuncion(string nombre)
+        {
+            if (Funciones.ContainsKey(nombre))
+            {
+                return true;
+            }
+            return false;
+        }
+
         public void addMessage(string mensaje)
         {
             this.mensajes += "\n" + mensaje;
@@ -100,15 +109,7 @@ namespace CompiPascal.General
             await File.WriteAllTextAsync("C:\\compiladores2\\AST.txt", this.grafo);
         }
 
-        public void ejecutarPrograma()
-        {
-            /*
-             recorre la lista de isntrucciones con un for each, cada instruccion detecta los errores
-            y si existe uno hará un throw, dentro del for aach hay un try catch para capturar los eerores dentro de la ejecucion
-             */
-
-
-        }
+        
 
 
 

@@ -11,11 +11,15 @@ namespace CompiPascal.Instrucciones
     {
 
         private Operacion contenido;
+        private int linea;
+        private int columna;
         //cambiar a lista de instrucciones :)
 
-        public Writeln(Operacion c)
+        public Writeln(Operacion c, int ln, int cl)
         {
             this.contenido = c;
+            this.linea = ln;
+            this.columna = cl;
         }
 
         public Object ejecutar(TSimbolo ts)

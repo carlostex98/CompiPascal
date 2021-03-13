@@ -11,17 +11,26 @@ namespace CompiPascal.Instrucciones
 
         private string nombre;
         private LinkedList<Operacion> parametros;
-        
+        private int linea;
+        private int columna;
 
-        public CallFuncion(string n, LinkedList<Operacion> p)
+        public CallFuncion(string n, LinkedList<Operacion> p, int ln, int cl)
         {
             this.nombre = n;
             this.parametros = p;
+            this.linea = ln;
+            this.columna = cl;
         }
 
 
         public Object ejecutar(TSimbolo ts)
         {
+            bool ss = Maestro.Instance.verificarFuncion(this.nombre);
+            if (!ss)
+            {
+                throw new Error(linea, columna, "Funcion: "+nombre+", no existe", Error.Tipo_error.SINTACTICO);
+            }
+
             FuncionDato f = Maestro.Instance.AccederFuncion(this.nombre);
             TSimbolo local = new TSimbolo(ts);
             TSimbolo aux = new TSimbolo();
@@ -76,7 +85,7 @@ namespace CompiPascal.Instrucciones
                             x++;
                         }
 
-                        Asignacion a = new Asignacion(nx, new Operacion(t));
+                        Asignacion a = new Asignacion(nx, new Operacion(t), linea, columna);
                         a.ejecutar(local);
                         i++;
                     }
@@ -95,6 +104,47 @@ namespace CompiPascal.Instrucciones
                 {
                     if (r.t_val == Retorno.tipoRetorno.EXIT)
                     {
+                        if (f.t_retorno == FuncionDato.tipoR.VOID)
+                        {
+                            throw new Error(linea, columna, "Una funcion tipo void no acepta retorno", Error.Tipo_error.SEMANTICO);
+                        }
+
+                        if (f.tipo == FuncionDato.tipoF.PROCEDIMINETO)
+                        {
+                            throw new Error(linea, columna, "Un procedimiento no puede reotornar un valor", Error.Tipo_error.SEMANTICO);
+                        }
+
+                        Primitivo s = r.valor;
+                        if (f.t_retorno == FuncionDato.tipoR.BOOLEAN)
+                        {
+                            if (s.t_val != Primitivo.tipo_val.BOOLEANO)
+                            {
+                                throw new Error(linea, columna, "Tipo de retorno y funcion incompatible, se esperaba booleano", Error.Tipo_error.SEMANTICO);
+                            }
+                        } 
+                        else if (f.t_retorno == FuncionDato.tipoR.STRING)
+                        {
+                            if (s.t_val != Primitivo.tipo_val.CADENA)
+                            {
+                                throw new Error(linea, columna, "Tipo de retorno y funcion incompatible, se esperaba cadena", Error.Tipo_error.SEMANTICO);
+                            }
+                        }
+                        else if (f.t_retorno == FuncionDato.tipoR.REAL)
+                        {
+                            if (s.t_val != Primitivo.tipo_val.INT && s.t_val != Primitivo.tipo_val.DECIMAL)
+                            {
+                                throw new Error(linea, columna, "Tipo de retorno y funcion incompatible, se esperaba un numero", Error.Tipo_error.SEMANTICO);
+                            }
+                        }
+                        else if (f.t_retorno == FuncionDato.tipoR.INTEGER)
+                        {
+                            if (s.t_val != Primitivo.tipo_val.INT && s.t_val != Primitivo.tipo_val.DECIMAL)
+                            {
+                                throw new Error(linea, columna, "Tipo de retorno y funcion incompatible, se esperaba un numero", Error.Tipo_error.SEMANTICO);
+                            }
+                        }
+
+
                         return r;
                     }
                     //break y continue deben arrojar error

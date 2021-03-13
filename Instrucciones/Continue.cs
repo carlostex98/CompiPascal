@@ -7,10 +7,13 @@ namespace CompiPascal.Instrucciones
 {
     class Continue:Instruccion
     {
+        private int linea;
+        private int columna;
 
-        public Continue()
+        public Continue(int ln, int cl)
         {
-
+            this.linea = ln;
+            this.columna = cl;
         }
 
 

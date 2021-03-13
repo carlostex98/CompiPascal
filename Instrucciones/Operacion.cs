@@ -42,7 +42,9 @@ namespace CompiPascal.Instrucciones
         private Acceso acc;
 
         private CallFuncion func;
-       
+        private int linea;
+        private int columna;
+
         // maneja todas
         public Operacion(Operacion operadorIzq, Operacion operadorDer, Tipo_operacion tipo)
         {
@@ -108,6 +110,7 @@ namespace CompiPascal.Instrucciones
                 //solo nos interesa el izquierdo
                 izq = operadorIzq.ejecutar(ts);
                 der = null;
+
             }
             else 
             {
@@ -124,70 +127,188 @@ namespace CompiPascal.Instrucciones
             Primitivo b = (Primitivo)der;
 
             if (tipo == Tipo_operacion.DIVISION)
-            {   
+            {
+                if (a.t_val != Primitivo.tipo_val.DECIMAL && a.t_val != Primitivo.tipo_val.INT)
+                {
+                    throw new Error(0,0, "Operador no numerico: "+Convert.ToString(a.valor), Error.Tipo_error.SEMANTICO);
+                }
+
+                if (b.t_val != Primitivo.tipo_val.DECIMAL && b.t_val != Primitivo.tipo_val.INT)
+                {
+                    throw new Error(0, 0, "Operador no numerico: " + Convert.ToString(b.valor), Error.Tipo_error.SEMANTICO);
+                }
+
                 return new Primitivo(Primitivo.tipo_val.INT, (object)(Convert.ToDouble(a.valor) / Convert.ToDouble(b.valor)));
             }
             else if (tipo == Tipo_operacion.MULTIPLICACION)
             {
+                if (a.t_val != Primitivo.tipo_val.DECIMAL && a.t_val != Primitivo.tipo_val.INT)
+                {
+                    throw new Error(0, 0, "Operador no numerico: " + Convert.ToString(a.valor), Error.Tipo_error.SEMANTICO);
+                }
+
+                if (b.t_val != Primitivo.tipo_val.DECIMAL && b.t_val != Primitivo.tipo_val.INT)
+                {
+                    throw new Error(0, 0, "Operador no numerico: " + Convert.ToString(b.valor), Error.Tipo_error.SEMANTICO);
+                }
+
                 return new Primitivo(Primitivo.tipo_val.INT, (object)(Convert.ToDouble(a.valor) * Convert.ToDouble(b.valor)));
             }
             else if (tipo == Tipo_operacion.RESTA)
             {
+                if (a.t_val != Primitivo.tipo_val.DECIMAL && a.t_val != Primitivo.tipo_val.INT)
+                {
+                    throw new Error(0, 0, "Operador no numerico: " + Convert.ToString(a.valor), Error.Tipo_error.SEMANTICO);
+                }
+
+                if (b.t_val != Primitivo.tipo_val.DECIMAL && b.t_val != Primitivo.tipo_val.INT)
+                {
+                    throw new Error(0, 0, "Operador no numerico: " + Convert.ToString(b.valor), Error.Tipo_error.SEMANTICO);
+                }
+
                 return new Primitivo(Primitivo.tipo_val.INT, (object)(Convert.ToDouble(a.valor) - Convert.ToDouble(b.valor)));
             }
             else if (tipo == Tipo_operacion.MODULO)
             {
+                if (a.t_val != Primitivo.tipo_val.DECIMAL && a.t_val != Primitivo.tipo_val.INT)
+                {
+                    throw new Error(0, 0, "Operador no numerico: " + Convert.ToString(a.valor), Error.Tipo_error.SEMANTICO);
+                }
+
+                if (b.t_val != Primitivo.tipo_val.DECIMAL && b.t_val != Primitivo.tipo_val.INT)
+                {
+                    throw new Error(0, 0, "Operador no numerico: " + Convert.ToString(b.valor), Error.Tipo_error.SEMANTICO);
+                }
+
                 return new Primitivo(Primitivo.tipo_val.INT, (object)(Convert.ToDouble(a.valor) % Convert.ToDouble(b.valor)));
             }
             else if (tipo == Tipo_operacion.SUMA)
             {
+
+                
                 //si los dos son string hace la concatenacion
-                if (a.t_val == Primitivo.tipo_val.CADENA && b.t_val == Primitivo.tipo_val.CADENA)
+                if (a.t_val == Primitivo.tipo_val.CADENA || b.t_val == Primitivo.tipo_val.CADENA)
                 {
-                    //System.Diagnostics.Debug.WriteLine(Convert.ToString(a.valor));
+                    
                     return new Primitivo(Primitivo.tipo_val.CADENA, (object)(Convert.ToString(a.valor) + Convert.ToString(b.valor)));
+                }
+                else if((a.t_val == Primitivo.tipo_val.INT || a.t_val == Primitivo.tipo_val.DECIMAL) &&(b.t_val == Primitivo.tipo_val.INT || b.t_val == Primitivo.tipo_val.DECIMAL))
+                {
+                    return new Primitivo(Primitivo.tipo_val.INT, (object)( Convert.ToDouble(a.valor) + Convert.ToDouble(b.valor)));
                 }
                 else
                 {
-                    return new Primitivo(Primitivo.tipo_val.INT, (object)( Convert.ToDouble(a.valor) + Convert.ToDouble(b.valor)));
+                    //error
+                    throw new Error(0, 0, "No se puede realizar la operacion: " + Convert.ToString(a.valor)+ " + "+ Convert.ToString(a.valor), Error.Tipo_error.SEMANTICO);
                 }
 
             }
             else if (tipo == Tipo_operacion.NEGATIVO)
             {
+                if (a.t_val != Primitivo.tipo_val.DECIMAL && a.t_val != Primitivo.tipo_val.INT)
+                {
+                    throw new Error(0, 0, "Operador no numerico: " + Convert.ToString(a.valor), Error.Tipo_error.SEMANTICO);
+                }
+
                 return new Primitivo(Primitivo.tipo_val.INT, (object)(Convert.ToDouble(a.valor) *  Convert.ToDouble(-1)));
             }
             else if (tipo == Tipo_operacion.NEGACION)
             {
+                if (a.t_val != Primitivo.tipo_val.BOOLEANO)
+                {
+                    throw new Error(0, 0, "Operador no booleano: " + Convert.ToString(a.valor), Error.Tipo_error.SEMANTICO);
+                }
+
                 return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)!(Convert.ToBoolean(a.valor)));
             }
             else if (tipo == Tipo_operacion.MAYOR_QUE)
             {
+
+                if (a.t_val != Primitivo.tipo_val.DECIMAL && a.t_val != Primitivo.tipo_val.INT)
+                {
+                    throw new Error(0, 0, "Operador no numerico: " + Convert.ToString(a.valor), Error.Tipo_error.SEMANTICO);
+                }
+
+                if (b.t_val != Primitivo.tipo_val.DECIMAL && b.t_val != Primitivo.tipo_val.INT)
+                {
+                    throw new Error(0, 0, "Operador no numerico: " + Convert.ToString(b.valor), Error.Tipo_error.SEMANTICO);
+                }
+
                 return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)(Convert.ToDouble(a.valor) > Convert.ToDouble(b.valor)));
             }
             else if (tipo == Tipo_operacion.MENOR_QUE)
             {
+                if (a.t_val != Primitivo.tipo_val.DECIMAL && a.t_val != Primitivo.tipo_val.INT)
+                {
+                    throw new Error(0, 0, "Operador no numerico: " + Convert.ToString(a.valor), Error.Tipo_error.SEMANTICO);
+                }
+
+                if (b.t_val != Primitivo.tipo_val.DECIMAL && b.t_val != Primitivo.tipo_val.INT)
+                {
+                    throw new Error(0, 0, "Operador no numerico: " + Convert.ToString(b.valor), Error.Tipo_error.SEMANTICO);
+                }
+
                 return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)(Convert.ToDouble(a.valor) < Convert.ToDouble(b.valor)));
             }
             else if (tipo == Tipo_operacion.MAYOR_I)
             {
+                if (a.t_val != Primitivo.tipo_val.DECIMAL && a.t_val != Primitivo.tipo_val.INT)
+                {
+                    throw new Error(0, 0, "Operador no numerico: " + Convert.ToString(a.valor), Error.Tipo_error.SEMANTICO);
+                }
+
+                if (b.t_val != Primitivo.tipo_val.DECIMAL && b.t_val != Primitivo.tipo_val.INT)
+                {
+                    throw new Error(0, 0, "Operador no numerico: " + Convert.ToString(b.valor), Error.Tipo_error.SEMANTICO);
+                }
+
                 return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)(Convert.ToDouble(a.valor) >= Convert.ToDouble(b.valor)));
             }
             else if (tipo == Tipo_operacion.MENOR_I)
             {
+                if (a.t_val != Primitivo.tipo_val.DECIMAL && a.t_val != Primitivo.tipo_val.INT)
+                {
+                    throw new Error(0, 0, "Operador no numerico: " + Convert.ToString(a.valor), Error.Tipo_error.SEMANTICO);
+                }
+
+                if (b.t_val != Primitivo.tipo_val.DECIMAL && b.t_val != Primitivo.tipo_val.INT)
+                {
+                    throw new Error(0, 0, "Operador no numerico: " + Convert.ToString(b.valor), Error.Tipo_error.SEMANTICO);
+                }
+
                 return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)(Convert.ToDouble(a.valor) <= Convert.ToDouble(b.valor)));
             }
             else if (tipo == Tipo_operacion.OO)
             {
+                if (a.t_val != Primitivo.tipo_val.BOOLEANO)
+                {
+                    throw new Error(0, 0, "Operador no booleano: " + Convert.ToString(a.valor), Error.Tipo_error.SEMANTICO);
+                }
+
+                if (b.t_val != Primitivo.tipo_val.BOOLEANO)
+                {
+                    throw new Error(0, 0, "Operador no booleano: " + Convert.ToString(b.valor), Error.Tipo_error.SEMANTICO);
+                }
+
                 return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)(Convert.ToBoolean(a.valor) || Convert.ToBoolean(b.valor)));
             }
             else if (tipo == Tipo_operacion.YY)
             {
+                if (a.t_val != Primitivo.tipo_val.BOOLEANO)
+                {
+                    throw new Error(0, 0, "Operador no booleano: " + Convert.ToString(a.valor), Error.Tipo_error.SEMANTICO);
+                }
+
+                if (b.t_val != Primitivo.tipo_val.BOOLEANO)
+                {
+                    throw new Error(0, 0, "Operador no booleano: " + Convert.ToString(b.valor), Error.Tipo_error.SEMANTICO);
+                }
+
                 return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)(Convert.ToBoolean(a.valor) && Convert.ToBoolean(b.valor)));
             }
             else if (tipo == Tipo_operacion.EQUIVALENCIA)
             {
-                
+                //esto no tira error :)
                 return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)(a.valor.Equals(b.valor)));
             }
             else if (tipo == Tipo_operacion.PRIMITIVO)

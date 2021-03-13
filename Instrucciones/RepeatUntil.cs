@@ -8,14 +8,17 @@ namespace CompiPascal.Instrucciones
 {
     public class RepeatUntil:Instruccion
     {
-
+        private int linea;
+        private int columna;
         private Operacion condicion;
         private LinkedList<Instruccion> listaInstrucciones;
 
-        public RepeatUntil(LinkedList<Instruccion> ins, Operacion cond)
+        public RepeatUntil(LinkedList<Instruccion> ins, Operacion cond, int ln, int cl)
         {
             this.condicion = cond;
             this.listaInstrucciones = ins;
+            this.linea = ln;
+            this.columna = cl;
         }
 
         public Object ejecutar(TSimbolo ts)
