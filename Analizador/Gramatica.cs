@@ -69,6 +69,7 @@ namespace CompiPascal.Analizador
             var else_ = ToTerm("else");
             var if_ = ToTerm("if");
             var writeln_ = ToTerm("writeln");
+            var write_ = ToTerm("write");
             var while_ = ToTerm("while");
             var do_ = ToTerm("do");
             
@@ -127,6 +128,7 @@ namespace CompiPascal.Analizador
             NonTerminal programa = new NonTerminal("programa");
             NonTerminal instr_normal = new NonTerminal("instr_normal");
             NonTerminal print_ = new NonTerminal("print");
+            NonTerminal print2_ = new NonTerminal("print2");
             NonTerminal type_var = new NonTerminal("type_var");
             NonTerminal list_vp = new NonTerminal("list_vp");
             NonTerminal lista_instr = new NonTerminal("lista_instr");
@@ -205,7 +207,7 @@ namespace CompiPascal.Analizador
             declaracion.Rule
                 = var_ + list_vp + dpunto + type_var + ptcoma
                 | var_ + list_vp + dpunto + type_var + igual + expresion + ptcoma
-                | const_ + identificador + dpunto + type_var + igual + expresion + ptcoma
+                | const_ + list_vp + dpunto + type_var + igual + expresion + ptcoma
                 ;
 
 
@@ -221,12 +223,15 @@ namespace CompiPascal.Analizador
                 | repeat_until
                 | for_do
                 | print_
+                | print2_
                 | redefinir
                 | Exit_
                 | break_ + ptcoma
                 | continue_ + ptcoma
                 | declaracion
                 ;
+
+
 
             Exit_.Rule
                 = exit_ + pizq + expresion + pder + ptcoma
@@ -244,10 +249,12 @@ namespace CompiPascal.Analizador
 
 
 
-            print_.Rule = writeln_ + pizq + expresion + pder + ptcoma;
+            print_.Rule = writeln_ + pizq + print_parametros + pder + ptcoma;
+
+            print2_.Rule = write_ + pizq + print_parametros + pder + ptcoma;
 
             print_parametros.Rule 
-                = expresion + print_parametros
+                = expresion + coma + print_parametros
                 | expresion
                 ;
 
@@ -263,12 +270,12 @@ namespace CompiPascal.Analizador
 
             cases.Rule
                 = case_ + expresion + of_ + casos_lista + end_ + ptcoma
-                | case_ + expresion + of_ + casos_lista + else_ + lista_instr + end_ + ptcoma
+                | case_ + expresion + of_ + casos_lista + else_ + begin_ + lista_instr +end_ + ptcoma + end_ + ptcoma
                 ;
 
             casos_lista.Rule 
-                = expresion + dpunto + lista_instr + casos_lista
-                | expresion + dpunto + lista_instr
+                = expresion + dpunto + begin_ + lista_instr + end_ + ptcoma + casos_lista
+                | expresion + dpunto + begin_ + lista_instr + end_ + ptcoma
                 ;
 
             while_do.Rule

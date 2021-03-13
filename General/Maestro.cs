@@ -63,6 +63,11 @@ namespace CompiPascal.General
         {
             this.output += "\n" + mensaje;
         }
+        public void addOutputNor(string mensaje)
+        {
+            this.output += mensaje;
+        }
+
         public string getOutput()
         {
             return this.output;

@@ -4,18 +4,15 @@ using System.Text;
 using CompiPascal.General;
 using CompiPascal.TablaSimbolos;
 
-
 namespace CompiPascal.Instrucciones
 {
-    public class Writeln: Instruccion
+    class WriteNor : Instruccion
     {
-
         private LinkedList<Operacion> contenido;
         private int linea;
         private int columna;
-        //cambiar a lista de instrucciones :)
 
-        public Writeln(LinkedList<Operacion> c, int ln, int cl)
+        public WriteNor(LinkedList<Operacion> c, int ln, int cl)
         {
             this.contenido = c;
             this.linea = ln;
@@ -29,11 +26,11 @@ namespace CompiPascal.Instrucciones
             {
                 Primitivo x = (Primitivo)cc.ejecutar(ts);
 
-                Maestro.Instance.addOutput(x.valor.ToString());
+                Maestro.Instance.addOutputNor(x.valor.ToString());
                 System.Diagnostics.Debug.WriteLine(x.valor.ToString());
             }
 
-            
+
             return null;
         }
 

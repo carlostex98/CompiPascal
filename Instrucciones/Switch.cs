@@ -38,8 +38,10 @@ namespace CompiPascal.Instrucciones
         {
             Primitivo d = (Primitivo)izquierdo.ejecutar(ts);
             TSimbolo local = new TSimbolo(ts);
-            
-            foreach(Case t in casos)
+            bool br = false;
+            bool st = false;
+
+            foreach (Case t in casos)
             {
                 //recorremos los casos
 
@@ -49,13 +51,39 @@ namespace CompiPascal.Instrucciones
                     //ejecuta el coso del caso
                     foreach (Instruccion s in t.getInstrucciones())
                     {
-                        s.ejecutar(local);
+                        Retorno r = (Retorno)s.ejecutar(local);
+                        if (r!=null)
+                        {
+                            if (r.t_val == Retorno.tipoRetorno.EXIT)
+                            {
+                                return r;
+                            }
+                            else if (r.t_val == Retorno.tipoRetorno.BREAK)
+                            {
+                                br = true;
+                                break;
+                            }
+                            else if (r.t_val == Retorno.tipoRetorno.CONTINUE)
+                            {
+                                return r;
+                            }
+                        }
+
+                        
+                        //s.ejecutar(local);
                     }
+                    //aqui el caso se cumplió normal
+                    st = true;
+                }
+
+                if (br)
+                {
+                    break;
                 }
 
             }
 
-            if (this.instr_else != null)
+            if (this.instr_else != null && !st)
             {
                 foreach (Instruccion s in this.instr_else)
                 {

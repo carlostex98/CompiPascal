@@ -142,7 +142,9 @@ namespace CompiPascal.Analizador
                     ParseTreeNode aux = ps.ChildNodes[0].ChildNodes[1];
                     //Maestro.Instance.addOutput("PROGRAM " + aux.Token.ValueString);
                     Operacion op = new Operacion(new Primitivo(Primitivo.tipo_val.CADENA, (object)("PROGRAM " + aux.Token.ValueString)));
-                    return new Writeln(op, ps.ChildNodes[0].Token.Location.Line, ps.ChildNodes[0].Token.Location.Column);
+                    LinkedList<Operacion> f = new LinkedList<Operacion>();
+                    f.AddLast(op);
+                    return new Writeln(f, ps.ChildNodes[0].Token.Location.Line, ps.ChildNodes[0].Token.Location.Column);
                     break;
                 case "declaracion":
                     //registramos en los simbolos, en este caso el contexto general
@@ -367,8 +369,14 @@ namespace CompiPascal.Analizador
             ParseTreeNode aux = ps.ChildNodes[0];
             if (aux.Term.Name == "print")
             {
-                return new Writeln(evalOpr(aux.ChildNodes[2]), aux.ChildNodes[0].Token.Location.Line, aux.ChildNodes[0].Token.Location.Column);
-            } 
+                return new Writeln(prtParam(aux.ChildNodes[2]), aux.ChildNodes[0].Token.Location.Line, aux.ChildNodes[0].Token.Location.Column);
+            }
+            else if (aux.Term.Name == "print2")
+            {
+                //evalualos la expresion
+                //System.Diagnostics.Debug.WriteLine(aux.ChildNodes.Count);
+                return new WriteNor(prtParam(aux.ChildNodes[2]), aux.ChildNodes[0].Token.Location.Line, aux.ChildNodes[0].Token.Location.Column);
+            }
             else if (aux.Term.Name == "if_then")
             {
                 //evalualos la expresion
@@ -425,6 +433,32 @@ namespace CompiPascal.Analizador
             return null;
         }
 
+        public LinkedList<Operacion> prtParam(ParseTreeNode ps)
+        {
+            if (ps.ChildNodes.Count == 3)
+            {
+                //uno y lista
+                LinkedList<Operacion> temporal = new LinkedList<Operacion>();
+                temporal.AddLast(evalOpr(ps.ChildNodes[0]));
+
+                LinkedList<Operacion> t1 = new LinkedList<Operacion>(prtParam(ps.ChildNodes[2]));
+                foreach (Operacion s in t1)
+                {
+                    temporal.AddLast(s);
+                }
+                return temporal;
+            }
+            else
+            {
+                //solo uno
+                LinkedList<Operacion> temporal = new LinkedList<Operacion>();
+                temporal.AddLast(evalOpr(ps.ChildNodes[0]));
+                return temporal;
+            }
+
+            //return null;
+        }
+
 
         public Instruccion evalSwitch(ParseTreeNode ps)
         {
@@ -435,7 +469,7 @@ namespace CompiPascal.Analizador
             else
             {
                 //tiene else
-                return new Switch(evalOpr(ps.ChildNodes[1]), evalCaso(ps.ChildNodes[3]), evaluar_general(ps.ChildNodes[5]), ps.ChildNodes[0].Token.Location.Line, ps.ChildNodes[0].Token.Location.Column);
+                return new Switch(evalOpr(ps.ChildNodes[1]), evalCaso(ps.ChildNodes[3]), evaluar_general(ps.ChildNodes[6]), ps.ChildNodes[0].Token.Location.Line, ps.ChildNodes[0].Token.Location.Column);
             }
             //return null;
         }
@@ -443,25 +477,26 @@ namespace CompiPascal.Analizador
 
         public LinkedList<Case> evalCaso(ParseTreeNode ps)
         {
-            if (ps.ChildNodes.Count == 4)
+            if (ps.ChildNodes.Count == 7)
             {
                 LinkedList<Case> temporal = new LinkedList<Case>();
-                temporal.AddLast(new Case(evalOpr(ps.ChildNodes[0]), evaluar_general(ps.ChildNodes[2]), ps.ChildNodes[1].Token.Location.Line, ps.ChildNodes[1].Token.Location.Column));
+                temporal.AddLast(new Case(evalOpr(ps.ChildNodes[0]), evaluar_general(ps.ChildNodes[3]), ps.ChildNodes[1].Token.Location.Line, ps.ChildNodes[1].Token.Location.Column));
 
-                LinkedList<Case> t1 = new LinkedList<Case>(evalCaso(ps.ChildNodes[3]));
+                LinkedList<Case> t1 = new LinkedList<Case>(evalCaso(ps.ChildNodes[6]));
                 foreach (Case item in t1)
                 {
                     temporal.AddLast(item);
                 }
 
                 return temporal;
-
+                // uno y mas
             }
             else
             {
                 LinkedList<Case> temporal = new LinkedList<Case>();
-                temporal.AddLast(new Case(evalOpr(ps.ChildNodes[0]), evaluar_general(ps.ChildNodes[2]), ps.ChildNodes[1].Token.Location.Line, ps.ChildNodes[1].Token.Location.Column));
+                temporal.AddLast(new Case(evalOpr(ps.ChildNodes[0]), evaluar_general(ps.ChildNodes[3]), ps.ChildNodes[1].Token.Location.Line, ps.ChildNodes[1].Token.Location.Column));
                 return temporal;
+                //solo uno
             }
 
             //return null;
