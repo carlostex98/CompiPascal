@@ -144,6 +144,10 @@ namespace CompiPascal.Analizador
 
             NonTerminal ret_func = new NonTerminal("ret_func");
 
+            NonTerminal multi_dec = new NonTerminal("multi_dec");
+
+            NonTerminal multi_const = new NonTerminal("multi_const");
+
 
             //NonTerminal  = new NonTerminal("");
             #endregion
@@ -205,9 +209,20 @@ namespace CompiPascal.Analizador
 
 
             declaracion.Rule
-                = var_ + list_vp + dpunto + type_var + ptcoma
-                | var_ + list_vp + dpunto + type_var + igual + expresion + ptcoma
-                | const_ + list_vp + dpunto + type_var + igual + expresion + ptcoma
+                = var_ + multi_dec
+                | const_ + multi_const
+                ;
+
+            multi_dec.Rule
+                = list_vp + dpunto + type_var + ptcoma + multi_dec
+                | list_vp + dpunto + type_var + ptcoma 
+                | list_vp + dpunto + type_var + igual + expresion + ptcoma + multi_dec
+                | list_vp + dpunto + type_var + igual + expresion + ptcoma
+                ;
+
+            multi_const.Rule
+                = list_vp + dpunto + type_var + igual + expresion + ptcoma + multi_dec
+                | list_vp + dpunto + type_var + igual + expresion + ptcoma
                 ;
 
 

@@ -99,6 +99,36 @@ namespace CompiPascal.Instrucciones
 
             foreach (Instruccion ins in f.retornarInstrucciones())
             {
+                LinkedList<string> n = new LinkedList<string>();
+                n.AddLast(this.nombre);
+                Declaracion esp;
+
+                //Declaracion esp = new Declaracion(n, Simbolo.);
+                if (f.t_retorno == FuncionDato.tipoR.INTEGER)
+                {
+                    esp = new Declaracion(n, Simbolo.tipo.INTEGER, (Operacion)null, linea, columna);
+                    esp.ejecutar(local);
+                } 
+                else if (f.t_retorno == FuncionDato.tipoR.REAL)
+                {
+                    esp = new Declaracion(n, Simbolo.tipo.REAL, (Operacion)null, linea, columna);
+                    esp.ejecutar(local);
+                }
+                else if (f.t_retorno == FuncionDato.tipoR.STRING)
+                {
+                    esp = new Declaracion(n, Simbolo.tipo.STRING, (Operacion)null, linea, columna);
+                    esp.ejecutar(local);
+                }
+                else if (f.t_retorno == FuncionDato.tipoR.BOOLEAN)
+                {
+                    esp = new Declaracion(n, Simbolo.tipo.BOOLEAN, (Operacion)null, linea, columna);
+                    esp.ejecutar(local);
+                }
+                
+
+                //le decimos a la tabla de simbolos que esta variable es especial y se debe arrojar un exit cunado se le asigne un valor
+                local.especial = nombre;
+
                 Retorno r = (Retorno)ins.ejecutar(local);
                 if (r != null)
                 {

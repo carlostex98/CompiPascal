@@ -71,7 +71,17 @@ namespace CompiPascal.Instrucciones
 
                 }
 
+                bool x = ts.esEspecial(id);
+
                 ts.redefinir(id, e);
+
+                if (x)
+                {
+                    //retorno
+                    Primitivo sm = ts.obtener(id).valor;
+                    //return sm;
+                    return new Retorno(Retorno.tipoRetorno.EXIT, sm);
+                }
             }
 
            

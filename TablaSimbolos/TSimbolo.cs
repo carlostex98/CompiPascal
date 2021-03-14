@@ -9,6 +9,7 @@ namespace CompiPascal.TablaSimbolos
     {
         public TSimbolo heredado;
         public Dictionary<string, Simbolo> variables = new Dictionary<string, Simbolo>();
+        public string especial = "";
 
         public TSimbolo(TSimbolo ts = null)
         {
@@ -24,6 +25,38 @@ namespace CompiPascal.TablaSimbolos
                 this.variables.Add(nombre, sb);
                 return true;
             }
+            return false;
+        }
+
+        public bool esEspecial(string e)
+        {
+
+            if (this.variables.ContainsKey(e))
+            {
+                if (e == especial)
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                //recorremos los demas contextos
+                TSimbolo aux = this.heredado;
+                while (aux != null)
+                {
+                    if (aux.variables.ContainsKey(e))
+                    {
+                        if (e == aux.especial)
+                        {
+                            return true;
+                        }
+                    }
+                    aux = aux.heredado;
+                }
+
+
+            }
+
             return false;
         }
 

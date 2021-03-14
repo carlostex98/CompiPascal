@@ -165,6 +165,77 @@ namespace CompiPascal.Analizador
             return null;
         }
 
+        public Instruccion declaracionVariable(ParseTreeNode ps)
+        {
+            if (ps.ChildNodes[0].Term.Name == "var")
+            {
+                return new MultiDeclaracion(declaracionUno(ps.ChildNodes[1]));
+            }
+            else
+            {
+                return new MultiDeclaracion(declaracionUno(ps.ChildNodes[1]));
+            }
+
+            //return null;
+        }
+
+        public LinkedList<Declaracion> declaracionUno(ParseTreeNode ps)
+        {
+            if (ps.ChildNodes.Count == 5)
+            {
+                //sin definir con lista
+                //uno inicializado y lista
+                int ln = ps.ChildNodes[1].Token.Location.Line;
+                int cl = ps.ChildNodes[1].Token.Location.Column;
+                LinkedList<Declaracion> temporal = new LinkedList<Declaracion>();
+                temporal.AddLast(new Declaracion(listaVar(ps.ChildNodes[0]), calcularTipo(ps.ChildNodes[2].ChildNodes[0].Term.Name), (Operacion)null, ln, cl));
+                LinkedList<Declaracion> t1 = new LinkedList<Declaracion>(declaracionUno(ps.ChildNodes[4]));
+                foreach (Declaracion s in t1)
+                {
+                    temporal.AddLast(s);
+                }
+                return temporal;
+
+            } 
+            else if (ps.ChildNodes.Count == 4)
+            {
+                //sin definir sin lista
+
+                int ln = ps.ChildNodes[1].Token.Location.Line;
+                int cl = ps.ChildNodes[1].Token.Location.Column;
+                LinkedList<Declaracion> temporal = new LinkedList<Declaracion>();
+                temporal.AddLast(new Declaracion(listaVar(ps.ChildNodes[0]), calcularTipo(ps.ChildNodes[2].ChildNodes[0].Term.Name), (Operacion)null, ln, cl));
+                return temporal;
+            }
+            else if (ps.ChildNodes.Count == 7)
+            {
+                //uno inicializado y lista
+                int ln = ps.ChildNodes[1].Token.Location.Line;
+                int cl = ps.ChildNodes[1].Token.Location.Column;
+                LinkedList<Declaracion> temporal = new LinkedList<Declaracion>();
+                temporal.AddLast(new Declaracion(listaVar(ps.ChildNodes[0]), calcularTipo(ps.ChildNodes[2].ChildNodes[0].Term.Name), evalOpr(ps.ChildNodes[4]), ln, cl));
+                LinkedList<Declaracion> t1 = new LinkedList<Declaracion>(declaracionUno(ps.ChildNodes[6]));
+                foreach (Declaracion s in t1)
+                {
+                    temporal.AddLast(s);
+                }
+                return temporal;
+
+            }
+            else if (ps.ChildNodes.Count == 6)
+            {
+                //uno, inicializado
+                int ln = ps.ChildNodes[1].Token.Location.Line;
+                int cl = ps.ChildNodes[1].Token.Location.Column;
+                LinkedList<Declaracion> temporal = new LinkedList<Declaracion>();
+                temporal.AddLast(new Declaracion(listaVar(ps.ChildNodes[0]), calcularTipo(ps.ChildNodes[2].ChildNodes[0].Term.Name), evalOpr(ps.ChildNodes[4]), ln, cl));
+                return temporal;
+            }
+
+            return null;
+        }
+
+
         public Instruccion evalFuncDec(ParseTreeNode ps)
         {
             if (ps.ChildNodes.Count == 11)
@@ -263,29 +334,7 @@ namespace CompiPascal.Analizador
 
 
 
-        public Instruccion declaracionVariable(ParseTreeNode ps)
-        {
-            if (ps.ChildNodes[0].Term.Name == "var")
-            {
-                LinkedList<string> nombres = listaVar(ps.ChildNodes[1]);
-                int ln = ps.ChildNodes[3].ChildNodes[0].Token.Location.Line;
-                int cl = ps.ChildNodes[3].ChildNodes[0].Token.Location.Column;
-
-                //variable
-                if (ps.ChildNodes.Count == 5)
-                {
-                    //System.Diagnostics.Debug.WriteLine(ps.ChildNodes[3].ChildNodes[0].Term.Name);
-                    return new Declaracion(nombres, calcularTipo(ps.ChildNodes[3].ChildNodes[0].Term.Name), (Operacion)null , ln, cl);
-                }
-                else{
-                    //variable inicializada
-                    return new Declaracion(nombres, calcularTipo(ps.ChildNodes[3].ChildNodes[0].Term.Name), evalOpr(ps.ChildNodes[5]), ln, cl);
-                }
-            }
-
-
-            return null;
-        }
+        
 
 
         public Simbolo.tipo calcularTipo(string v)
@@ -432,6 +481,8 @@ namespace CompiPascal.Analizador
 
             return null;
         }
+
+
 
         public LinkedList<Operacion> prtParam(ParseTreeNode ps)
         {
@@ -721,12 +772,12 @@ namespace CompiPascal.Analizador
                 }
                 else if (aux.Term.Name == "true")
                 {
-                    Primitivo p = new Primitivo(Primitivo.tipo_val.CADENA, (object)true );
+                    Primitivo p = new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)true );
                     return new Operacion(p);
                 }
                 else if (aux.Term.Name == "false")
                 {
-                    Primitivo p = new Primitivo(Primitivo.tipo_val.CADENA, (object)false);
+                    Primitivo p = new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)false);
                     return new Operacion(p);
                 }
                 else if (aux.Term.Name == "identificador")
