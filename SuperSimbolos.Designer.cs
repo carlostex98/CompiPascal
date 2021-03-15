@@ -34,6 +34,7 @@ namespace CompiPascal
             this.tipo = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.linea = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.columna = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -76,11 +77,22 @@ namespace CompiPascal
             this.columna.Name = "columna";
             this.columna.ReadOnly = true;
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(713, 415);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 1;
+            this.button1.Text = "Actualizar";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // SuperSimbolos
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.dataGridView1);
             this.Name = "SuperSimbolos";
             this.Text = "SuperSimbolos";
@@ -97,5 +109,6 @@ namespace CompiPascal
         private System.Windows.Forms.DataGridViewTextBoxColumn tipo;
         private System.Windows.Forms.DataGridViewTextBoxColumn linea;
         private System.Windows.Forms.DataGridViewTextBoxColumn columna;
+        private System.Windows.Forms.Button button1;
     }
 }

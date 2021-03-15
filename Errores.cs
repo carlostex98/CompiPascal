@@ -23,5 +23,15 @@ namespace CompiPascal
                 dataGridView1.Rows.Add(item.tipo_.ToString(), item.descripcion, item.linea.ToString(), item.columna.ToString());
             }
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.dataGridView1.Rows.Clear();
+
+            foreach (Error item in Maestro.Instance.getErrores())
+            {
+                dataGridView1.Rows.Add(item.tipo_.ToString(), item.descripcion, item.linea.ToString(), item.columna.ToString());
+            }
+        }
     }
 }

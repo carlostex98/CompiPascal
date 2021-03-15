@@ -26,6 +26,10 @@ namespace CompiPascal.Instrucciones
         public Object ejecutar(TSimbolo ts) 
         {
             Primitivo condres = (Primitivo)condicion.ejecutar(ts);
+            if (condres.t_val != Primitivo.tipo_val.BOOLEANO)
+            {
+                throw new Error(linea, columna, "Se requiere una valor booleano", Error.Tipo_error.SEMANTICO);
+            }
             bool br = false;
 
             while ((Boolean)(condres.valor))

@@ -27,7 +27,7 @@ namespace CompiPascal.Instrucciones
                 Primitivo x = (Primitivo)cc.ejecutar(ts);
 
                 Maestro.Instance.addOutputNor(x.valor.ToString());
-                System.Diagnostics.Debug.WriteLine(x.valor.ToString());
+                //System.Diagnostics.Debug.WriteLine(x.valor.ToString());
             }
 
 

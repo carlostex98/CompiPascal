@@ -60,6 +60,10 @@ namespace CompiPascal.Instrucciones
                 }
 
                 local_cond = (Primitivo)condicion.ejecutar(ts);
+                if (local_cond.t_val != Primitivo.tipo_val.BOOLEANO)
+                {
+                    throw new Error(linea, columna, "Se esperava resultado booleano en condicion de repeat", Error.Tipo_error.SEMANTICO);
+                }
 
             } while ((Boolean)local_cond.valor);
 

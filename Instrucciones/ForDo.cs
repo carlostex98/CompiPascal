@@ -39,8 +39,15 @@ namespace CompiPascal.Instrucciones
 
             bool br = false;
             //bool ct = false;
+            if (p.t_val != Primitivo.tipo_val.DECIMAL && p.t_val != Primitivo.tipo_val.INT)
+            {
+                throw new Error(linea, columna, "For-do solo acepta variables numericas", Error.Tipo_error.SINTACTICO);
+            }
+            if (z.t_val != Primitivo.tipo_val.DECIMAL && z.t_val != Primitivo.tipo_val.INT)
+            {
+                throw new Error(linea, columna, "For-do solo acepta variables numericas", Error.Tipo_error.SINTACTICO);
+            }
 
-            
 
             while (a<=b)
             {

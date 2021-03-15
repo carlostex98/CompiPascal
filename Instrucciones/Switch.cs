@@ -45,8 +45,12 @@ namespace CompiPascal.Instrucciones
             {
                 //recorremos los casos
 
-                Primitivo i = (Primitivo)t.getOperacion().ejecutar(local);
-                if (i.valor.Equals(d.valor))
+                Primitivo i = (Primitivo)t.getOperacion().ejecutar(ts);
+                Operacion equiv = new Operacion( new Operacion(i), new Operacion(d), Operacion.Tipo_operacion.EQUIVALENCIA );
+                Primitivo p = (Primitivo)equiv.ejecutar(ts);
+                
+
+                if ((Boolean)p.valor)
                 {
                     //ejecuta el coso del caso
                     foreach (Instruccion s in t.getInstrucciones())

@@ -43,13 +43,14 @@ namespace CompiPascal.Analizador
                 //Maestro.Instance.addMessage("Entrada incorrecta");
                 foreach (Irony.LogMessage a in arbol.ParserMessages)
                 {
-                    System.Diagnostics.Debug.WriteLine(a.Message, a.Location.Line, a.Location.Column);
-                    System.Diagnostics.Debug.WriteLine(a.Location.Line);
-                    System.Diagnostics.Debug.WriteLine(a.Location.Column);
-                    System.Diagnostics.Debug.WriteLine("-----");
+                    //System.Diagnostics.Debug.WriteLine(a.Message, a.Location.Line, a.Location.Column);
+                    //System.Diagnostics.Debug.WriteLine(a.Location.Line);
+                    //System.Diagnostics.Debug.WriteLine(a.Location.Column);
+                    //System.Diagnostics.Debug.WriteLine("-----");
+                    
                     Maestro.Instance.addError(new Error(a.Location.Line, a.Location.Column, a.Message, Error.Tipo_error.LEXICO) );
                 }
-                System.Diagnostics.Debug.WriteLine("compilado con errores");
+                Maestro.Instance.addOutput("No se puede ejecutar, ver tabla de errores");
             }
             else
             {

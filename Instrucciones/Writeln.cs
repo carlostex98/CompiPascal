@@ -30,7 +30,7 @@ namespace CompiPascal.Instrucciones
                 Primitivo x = (Primitivo)cc.ejecutar(ts);
 
                 Maestro.Instance.addOutput(x.valor.ToString());
-                System.Diagnostics.Debug.WriteLine(x.valor.ToString());
+                //System.Diagnostics.Debug.WriteLine(x.valor.ToString());
             }
 
             
