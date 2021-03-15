@@ -14,7 +14,7 @@ namespace CompiPascal.Analizador
 
 
 
-        public Gramatica()
+        public Gramatica():base(caseSensitive: false)
         {
             
             #region ER
@@ -43,7 +43,7 @@ namespace CompiPascal.Analizador
             var igual = ToTerm("=");
 
             //negacion
-            var negacion = ToTerm("!");
+            var negacion = ToTerm("not");
 
             //agrupacion
             var pizq = ToTerm("(");
@@ -72,7 +72,9 @@ namespace CompiPascal.Analizador
             var write_ = ToTerm("write");
             var while_ = ToTerm("while");
             var do_ = ToTerm("do");
-            
+
+            var graficar_ts = ToTerm("graficar_ts");
+
             var case_ = ToTerm("case");
             var of_ = ToTerm("of");
 
@@ -92,8 +94,8 @@ namespace CompiPascal.Analizador
             var real_ = ToTerm("real");
             var void_ = ToTerm("void");
 
-            var and_ = ToTerm("and");
-            var or_ = ToTerm("or");
+            var and_ = ToTerm("AND");
+            var or_ = ToTerm("OR");
 
             var true_ = ToTerm("true");
             var false_ = ToTerm("false");
@@ -147,7 +149,10 @@ namespace CompiPascal.Analizador
             NonTerminal multi_dec = new NonTerminal("multi_dec");
 
             NonTerminal multi_const = new NonTerminal("multi_const");
+            NonTerminal multi_else = new NonTerminal("multi_else");
 
+            NonTerminal dec_func = new NonTerminal("dec_func");
+            
 
             //NonTerminal  = new NonTerminal("");
             #endregion
@@ -168,18 +173,23 @@ namespace CompiPascal.Analizador
                 | declaracion
                 | procedimiento
                 | main_
+                | graficar_ts + pizq + pder
+                | graficar_ts + pizq + pder + ptcoma
                 ;
 
             programa.Rule = program_ + identificador + ptcoma;
 
             procedimiento.Rule
-                = procedure_ + identificador + pizq + pder + begin_ + lista_instr + end_ + ptcoma
-                | procedure_ + identificador + pizq + parametros + pder + begin_ + lista_instr + end_ + ptcoma
+                = procedure_ + identificador + pizq + pder + ptcoma+ dec_func + begin_ + lista_instr + end_ + ptcoma
+                | procedure_ + identificador + pizq + parametros + pder + ptcoma + dec_func + begin_ + lista_instr + end_ + ptcoma
                 ;
 
+            dec_func.Rule = Empty | declaracion;
+
+
             funcion.Rule
-                = function_ + identificador + pizq + pder + dpunto + ret_func + ptcoma + begin_ + lista_instr + end_ + ptcoma
-                | function_ + identificador + pizq + parametros + pder + dpunto + ret_func + ptcoma + begin_ + lista_instr + end_ + ptcoma
+                = function_ + identificador + pizq + pder + dpunto + ret_func + ptcoma + dec_func + begin_ + lista_instr + end_ + ptcoma
+                | function_ + identificador + pizq + parametros + pder + dpunto + ret_func + ptcoma + dec_func + begin_ + lista_instr + end_ + ptcoma
                 ;
 
             parametros.Rule
@@ -234,6 +244,7 @@ namespace CompiPascal.Analizador
                 = if_then
                 | cases
                 | function_call + ptcoma
+                | function_call 
                 | while_do
                 | repeat_until
                 | for_do
@@ -243,17 +254,23 @@ namespace CompiPascal.Analizador
                 | Exit_
                 | break_ + ptcoma
                 | continue_ + ptcoma
+                | break_ 
+                | continue_ 
                 | declaracion
+                | graficar_ts + pizq + pder
+                | graficar_ts + pizq + pder + ptcoma
                 ;
 
 
 
             Exit_.Rule
                 = exit_ + pizq + expresion + pder + ptcoma
+                | exit_ + pizq + expresion + pder 
                 ;
 
             redefinir.Rule
                 = identificador + dpunto + igual + expresion + ptcoma
+                | identificador + dpunto + igual + expresion 
                 ;
 
 
@@ -264,9 +281,15 @@ namespace CompiPascal.Analizador
 
 
 
-            print_.Rule = writeln_ + pizq + print_parametros + pder + ptcoma;
+            print_.Rule 
+                = writeln_ + pizq + print_parametros + pder + ptcoma
+                | writeln_ + pizq + print_parametros + pder 
+                ;
 
-            print2_.Rule = write_ + pizq + print_parametros + pder + ptcoma;
+            print2_.Rule 
+                = write_ + pizq + print_parametros + pder + ptcoma
+                | write_ + pizq + print_parametros + pder
+                ;
 
             print_parametros.Rule 
                 = expresion + coma + print_parametros
@@ -281,6 +304,13 @@ namespace CompiPascal.Analizador
             if_then.Rule
                 = if_ + expresion + then_ + bloque_inst
                 | if_ + expresion + then_ + bloque_inst + else_ + bloque_inst
+                | if_ + expresion + then_ + bloque_inst + multi_else
+                | if_ + expresion + then_ + bloque_inst + multi_else + else_ + bloque_inst
+                ;
+
+            multi_else.Rule
+                = else_ + if_ + expresion + bloque_inst + multi_else
+                | else_ + if_ + expresion + bloque_inst
                 ;
 
             cases.Rule
@@ -320,7 +350,8 @@ namespace CompiPascal.Analizador
                 | expresion + menor + expresion
                 | expresion + mayor + igual + expresion
                 | expresion + menor + igual + expresion
-                | expresion + igual + igual + expresion
+                | expresion + menor + mayor + expresion
+                | expresion + igual + expresion
                 | negacion + expresion
                 | menos + expresion
                 | valor

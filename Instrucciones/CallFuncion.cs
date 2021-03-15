@@ -46,31 +46,66 @@ namespace CompiPascal.Instrucciones
 
                 foreach (Operacion p in parametros)
                 {
-                    final.AddLast((Primitivo)p.ejecutar(local));
+                    final.AddLast((Primitivo)p.ejecutar(ts));
                 }
 
-                //System.Diagnostics.Debug.WriteLine(f.retornarVars().Count);
+                
 
                 foreach (Declaracion t in f.retornarVars())
                 {
-                    t.ejecutar(aux);
+                    t.ejecutar(local);
                 }
 
 
-                if (final.Count == aux.variables.Count)
+                if (final.Count == local.variables.Count)
                 {
-                    //si la cantidad de variables de llamada son a las declaradas
-                    foreach (Declaracion t in f.retornarVars())
-                    {
-                        t.ejecutar(local);
-                    }
 
+                    Dictionary<string, Simbolo> aux_v = new Dictionary<string, Simbolo>();
+
+                    int m = 0;
+                    int n = 0;
                     foreach (KeyValuePair<string, Simbolo> t in local.variables)
                     {
-                        nombres.AddLast(t.Key.ToString());
+
+                        //Simbolo s = null;
+                        //s.setValor(final.);
+                        foreach (Primitivo tx in final)
+                        {
+                            if (m == n)
+                            {
+                                Simbolo k = new Simbolo(t.Key, t.Value.Tipo ,tx);
+                                
+
+
+                                //local.variables[t.Key] = s;
+                                aux_v.Add(t.Key, k);
+                                n = 0;
+                                //System.Diagnostics.Debug.WriteLine(aux_v[t.Key].valor.valor);
+                                //System.Diagnostics.Debug.WriteLine(s.getId());
+                                break;
+                            }
+                            n++;
+                        }
+                        m++;
+                        
+                        //nombres.AddLast(t.Key.ToString());
                     }
 
-                    int i = 0;
+                   
+
+
+                    local.variables = aux_v;
+
+                    /*foreach (KeyValuePair<string, Simbolo> t in aux_v)
+                    {
+                        //nombres.AddLast(t.Key.ToString());
+                        System.Diagnostics.Debug.WriteLine(t.Key.ToString());
+                        System.Diagnostics.Debug.WriteLine(t.Value.valor.valor);
+                    }*/
+
+
+
+                    /*int i = 0;
                     int x = 0;
                     foreach (Primitivo t in final)
                     {
@@ -84,18 +119,28 @@ namespace CompiPascal.Instrucciones
                             }
                             x++;
                         }
-
+                        //System.Diagnostics.Debug.WriteLine(nx);
+                        //System.Diagnostics.Debug.WriteLine(t.valor);
                         Asignacion a = new Asignacion(nx, new Operacion(t), linea, columna);
                         a.ejecutar(local);
                         i++;
-                    }
+                    }*/
 
                     //ya etsn las variables y asignaciones en la llamada
 
                 }
 
             }
+
             
+            /*foreach (KeyValuePair<string, Simbolo> t in local.variables)
+            {
+                //nombres.AddLast(t.Key.ToString());
+                System.Diagnostics.Debug.WriteLine(t.Key.ToString());
+                System.Diagnostics.Debug.WriteLine(t.Value.valor.valor);
+            }*/
+
+
 
             foreach (Instruccion ins in f.retornarInstrucciones())
             {
@@ -124,14 +169,25 @@ namespace CompiPascal.Instrucciones
                     esp = new Declaracion(n, Simbolo.tipo.BOOLEAN, (Operacion)null, linea, columna);
                     esp.ejecutar(local);
                 }
-                
 
+                object rx = null;
                 //le decimos a la tabla de simbolos que esta variable es especial y se debe arrojar un exit cunado se le asigne un valor
-                local.especial = nombre;
-
-                Retorno r = (Retorno)ins.ejecutar(local);
-                if (r != null)
+                if (f.t_retorno != FuncionDato.tipoR.VOID)
                 {
+                    local.especial = nombre;
+                    rx = ins.ejecutar(local);
+                }
+                else
+                {
+                    ins.ejecutar(local);
+                }
+
+
+
+                
+                if (rx != null)
+                {
+                    Retorno r = (Retorno)rx;
                     if (r.t_val == Retorno.tipoRetorno.EXIT)
                     {
                         if (f.t_retorno == FuncionDato.tipoR.VOID)

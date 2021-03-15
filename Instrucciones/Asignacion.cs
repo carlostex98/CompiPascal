@@ -25,8 +25,10 @@ namespace CompiPascal.Instrucciones
         public Object ejecutar(TSimbolo ts)
         {
             Primitivo e = (Primitivo)valor.ejecutar(ts);
+            //System.Diagnostics.Debug.WriteLine(e.valor);
 
             Simbolo s = ts.obtener(id);
+
 
             if (s==null)
             {
@@ -74,6 +76,8 @@ namespace CompiPascal.Instrucciones
                 bool x = ts.esEspecial(id);
 
                 ts.redefinir(id, e);
+                //System.Diagnostics.Debug.WriteLine(e.valor);
+                
 
                 if (x)
                 {

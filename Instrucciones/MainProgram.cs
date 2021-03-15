@@ -32,6 +32,7 @@ namespace CompiPascal.Instrucciones
                 }
                 catch (Error x)
                 {
+                    Maestro.Instance.addError(x);
                     Maestro.Instance.addOutput(x.getDescripcion());
                     //System.Diagnostics.Debug.WriteLine("eeeeeee");
                 }

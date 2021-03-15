@@ -8,7 +8,7 @@ using Irony.Parsing;
 using CompiPascal.General;
 using CompiPascal.Instrucciones;
 using CompiPascal.TablaSimbolos;
-
+using System.Diagnostics;
 
 namespace CompiPascal.Analizador
 {
@@ -47,6 +47,7 @@ namespace CompiPascal.Analizador
                     System.Diagnostics.Debug.WriteLine(a.Location.Line);
                     System.Diagnostics.Debug.WriteLine(a.Location.Column);
                     System.Diagnostics.Debug.WriteLine("-----");
+                    Maestro.Instance.addError(new Error(a.Location.Line, a.Location.Column, a.Message, Error.Tipo_error.LEXICO) );
                 }
                 System.Diagnostics.Debug.WriteLine("compilado con errores");
             }
@@ -55,6 +56,8 @@ namespace CompiPascal.Analizador
                 //mandamos a llamar a los metodos de instrucciones
                 //Maestro.Instance.addMessage("Todo correcto");
                 _ = this.generarImagen(raiz_grogram);
+
+                
 
                 this.evaluarInstrucciones(raiz_grogram.ChildNodes[0]);
 
@@ -69,6 +72,7 @@ namespace CompiPascal.Analizador
                     }
                     catch (Error x)
                     {
+                        Maestro.Instance.addError(x);
                         Maestro.Instance.addOutput(x.getDescripcion());
                         //System.Diagnostics.Debug.WriteLine("eeeeeee");
                     }
@@ -102,10 +106,27 @@ namespace CompiPascal.Analizador
         public async Task generarImagen(ParseTreeNode raiz)
         {
             this.getDot(raiz);
-            //DOT dot = new DOT();
-            //BinaryImage img = dot.ToPNG(this.grafo);
-            //img.Save("C:\\compiladores2\\AST.png");
             await File.WriteAllTextAsync("C:\\compiladores2\\AST.txt", this.grafo);
+            using (Process p = new Process())
+            {
+                // set start info
+                p.StartInfo = new ProcessStartInfo("cmd.exe")
+                {
+                    RedirectStandardInput = true,
+                    UseShellExecute = false,
+                    WorkingDirectory = @"C:\"
+                };
+                // event handlers for output & error
+                //p.OutputDataReceived += p_OutputDataReceived;
+                //p.ErrorDataReceived += p_ErrorDataReceived;
+
+                // start process
+                p.Start();
+                // send command to its input
+                p.StandardInput.Write("dot -Tpng AST.txt -o outfile.png");
+                //wait
+                p.WaitForExit();
+            }
         }
 
 
@@ -144,7 +165,7 @@ namespace CompiPascal.Analizador
                     Operacion op = new Operacion(new Primitivo(Primitivo.tipo_val.CADENA, (object)("PROGRAM " + aux.Token.ValueString)));
                     LinkedList<Operacion> f = new LinkedList<Operacion>();
                     f.AddLast(op);
-                    return new Writeln(f, ps.ChildNodes[0].Token.Location.Line, ps.ChildNodes[0].Token.Location.Column);
+                    return new Writeln(f,0, 0);
                     break;
                 case "declaracion":
                     //registramos en los simbolos, en este caso el contexto general
@@ -155,11 +176,26 @@ namespace CompiPascal.Analizador
                     // usa lo mismo que la funcion
                     return evalProdDec(ps.ChildNodes[0]);
                     break;
+
+                case "graficar_ts":
+                    // usa lo mismo que la funcion
+                    return new GraficarTS();
+                    break;
                 case "main":
                     //                      main           listaInstr    
                     ParseTreeNode auxx = ps.ChildNodes[0].ChildNodes[1];
                     
                     return new MainProgram(evaluar_general(auxx), ps.ChildNodes[0].ChildNodes[0].Token.Location.Line, ps.ChildNodes[0].ChildNodes[0].Token.Location.Column);
+            }
+
+            return null;
+        }
+
+        public Instruccion evlDecFunc(ParseTreeNode ps)
+        {
+            if (ps.Term.Name == "declaracion")
+            {
+                return declaracionVariable(ps.ChildNodes[0]);
             }
 
             return null;
@@ -238,15 +274,29 @@ namespace CompiPascal.Analizador
 
         public Instruccion evalFuncDec(ParseTreeNode ps)
         {
-            if (ps.ChildNodes.Count == 11)
+            if (ps.ChildNodes.Count == 12)
             {
-                return new Funcion(ps.ChildNodes[1].Token.ValueString, evaluar_general(ps.ChildNodes[8]), null, FuncionDato.tipoF.FUNCION, evaluarRet(ps.ChildNodes[5].ChildNodes[0].Token.ValueString),ps.ChildNodes[1].Token.Location.Line, ps.ChildNodes[1].Token.Location.Column);
+
+                LinkedList<Instruccion> tmp = new LinkedList<Instruccion>(evaluar_general(ps.ChildNodes[9]));
+                if (evlDecFunc(ps.ChildNodes[7]) != null)
+                {
+                    tmp.AddFirst(evlDecFunc(ps.ChildNodes[7]));
+                }
+                //tmp.AddFirst(evlDecFunc(ps.ChildNodes[7]));
+
+                return new Funcion(ps.ChildNodes[1].Token.ValueString, tmp, null, FuncionDato.tipoF.FUNCION, evaluarRet(ps.ChildNodes[5].ChildNodes[0].Token.ValueString),ps.ChildNodes[1].Token.Location.Line, ps.ChildNodes[1].Token.Location.Column);
             }
             else
             {
                 //funcion con parametros
                 //System.Diagnostics.Debug.WriteLine(ps.ChildNodes[6].ChildNodes[0].Token.ValueString);
-                return new Funcion(ps.ChildNodes[1].Token.ValueString, evaluar_general(ps.ChildNodes[9]), evalParamDec(ps.ChildNodes[3]), FuncionDato.tipoF.FUNCION, evaluarRet(ps.ChildNodes[6].ChildNodes[0].Token.ValueString), ps.ChildNodes[1].Token.Location.Line, ps.ChildNodes[1].Token.Location.Column);
+                LinkedList<Instruccion> tmp = new LinkedList<Instruccion>(evaluar_general(ps.ChildNodes[10]));
+                if (evlDecFunc(ps.ChildNodes[8]) != null)
+                {
+                    tmp.AddFirst(evlDecFunc(ps.ChildNodes[8]));
+                }
+
+                return new Funcion(ps.ChildNodes[1].Token.ValueString, tmp, evalParamDec(ps.ChildNodes[3]), FuncionDato.tipoF.FUNCION, evaluarRet(ps.ChildNodes[6].ChildNodes[0].Token.ValueString), ps.ChildNodes[1].Token.Location.Line, ps.ChildNodes[1].Token.Location.Column);
             }
 
             //return null;
@@ -280,14 +330,25 @@ namespace CompiPascal.Analizador
 
         public Instruccion evalProdDec(ParseTreeNode ps)
         {
-            if (ps.ChildNodes.Count == 8)
+            if (ps.ChildNodes.Count == 10)
             {
-                return new Funcion(ps.ChildNodes[1].Token.ValueString, evaluar_general(ps.ChildNodes[5]), null, FuncionDato.tipoF.PROCEDIMINETO, FuncionDato.tipoR.VOID, ps.ChildNodes[1].Token.Location.Line, ps.ChildNodes[1].Token.Location.Column);
+                LinkedList<Instruccion> tmp = new LinkedList<Instruccion>(evaluar_general(ps.ChildNodes[7]));
+                if (evlDecFunc(ps.ChildNodes[5])!=null)
+                {
+                    tmp.AddFirst(evlDecFunc(ps.ChildNodes[5]));
+                }
+
+                return new Funcion(ps.ChildNodes[1].Token.ValueString, tmp, null, FuncionDato.tipoF.PROCEDIMINETO, FuncionDato.tipoR.VOID, ps.ChildNodes[1].Token.Location.Line, ps.ChildNodes[1].Token.Location.Column);
             }
             else
             {
+                LinkedList<Instruccion> tmp = new LinkedList<Instruccion>(evaluar_general(ps.ChildNodes[8]));
+                if (evlDecFunc(ps.ChildNodes[6]) != null)
+                {
+                    tmp.AddFirst(evlDecFunc(ps.ChildNodes[6]));
+                }
                 //funcion con parametros
-                return new Funcion(ps.ChildNodes[1].Token.ValueString, evaluar_general(ps.ChildNodes[6]), evalParamDec(ps.ChildNodes[3]), FuncionDato.tipoF.PROCEDIMINETO, FuncionDato.tipoR.VOID,ps.ChildNodes[1].Token.Location.Line, ps.ChildNodes[1].Token.Location.Column);
+                return new Funcion(ps.ChildNodes[1].Token.ValueString, tmp, evalParamDec(ps.ChildNodes[3]), FuncionDato.tipoF.PROCEDIMINETO, FuncionDato.tipoR.VOID,ps.ChildNodes[1].Token.Location.Line, ps.ChildNodes[1].Token.Location.Column);
             }
 
             //return null;
@@ -474,9 +535,13 @@ namespace CompiPascal.Analizador
             }
             else if (aux.Term.Name == "cases")
             {
-                //ParseTreeNode mx = ps.ChildNodes[0];
-                //return declaracionVariable(aux);
+                
                 return evalSwitch(aux);
+            }
+            else if (aux.Term.Name == "graficar_ts")
+            {
+
+                return new GraficarTS();
             }
 
             return null;
@@ -515,12 +580,12 @@ namespace CompiPascal.Analizador
         {
             if (ps.ChildNodes.Count == 6)
             {
-                return new Switch(evalOpr(ps.ChildNodes[1]), evalCaso(ps.ChildNodes[3]), ps.ChildNodes[0].Token.Location.Line, ps.ChildNodes[0].Token.Location.Column);
+                return new Instrucciones.Switch(evalOpr(ps.ChildNodes[1]), evalCaso(ps.ChildNodes[3]), ps.ChildNodes[0].Token.Location.Line, ps.ChildNodes[0].Token.Location.Column);
             }
             else
             {
                 //tiene else
-                return new Switch(evalOpr(ps.ChildNodes[1]), evalCaso(ps.ChildNodes[3]), evaluar_general(ps.ChildNodes[6]), ps.ChildNodes[0].Token.Location.Line, ps.ChildNodes[0].Token.Location.Column);
+                return new Instrucciones.Switch(evalOpr(ps.ChildNodes[1]), evalCaso(ps.ChildNodes[3]), evaluar_general(ps.ChildNodes[6]), ps.ChildNodes[0].Token.Location.Line, ps.ChildNodes[0].Token.Location.Column);
             }
             //return null;
         }
@@ -627,20 +692,64 @@ namespace CompiPascal.Analizador
         }
         public Instruccion evalIf(ParseTreeNode ps)
         {
+
             if (ps.ChildNodes.Count == 4)
             {
-                
+                //solo if
                 return new If_st(evalOpr(ps.ChildNodes[1]), evalBloque(ps.ChildNodes[3]), ps.ChildNodes[0].Token.Location.Line, ps.ChildNodes[0].Token.Location.Column);
             }
-            else
+            else if(ps.ChildNodes.Count == 6)
             {
                 //tiene else
                 
                 return new If_st(evalOpr(ps.ChildNodes[1]), evalBloque(ps.ChildNodes[3]), evalBloque(ps.ChildNodes[5]), ps.ChildNodes[0].Token.Location.Line, ps.ChildNodes[0].Token.Location.Column);
 
             }
+            else if (ps.ChildNodes.Count == 5)
+            {
+                //if -else if-
+
+                return new If_st(evalOpr(ps.ChildNodes[1]), evalBloque(ps.ChildNodes[3]), evalElseIf(ps.ChildNodes[4]), ps.ChildNodes[0].Token.Location.Line, ps.ChildNodes[0].Token.Location.Column);
+
+            }
+
+            else if (ps.ChildNodes.Count == 7)
+            {
+                //if -else if- else
+
+                return new If_st(evalOpr(ps.ChildNodes[1]), evalBloque(ps.ChildNodes[3]), evalElseIf(ps.ChildNodes[4]), evalBloque(ps.ChildNodes[6]), ps.ChildNodes[0].Token.Location.Line, ps.ChildNodes[0].Token.Location.Column);
+
+            }
+
+            return null;
 
         }
+
+
+        public LinkedList<MultiElse> evalElseIf(ParseTreeNode ps)
+        {
+
+            if (ps.ChildNodes.Count == 5)
+            {
+                LinkedList<MultiElse> temporal = new LinkedList<MultiElse>();
+                temporal.AddLast(new MultiElse(evalOpr(ps.ChildNodes[2]), evalBloque(ps.ChildNodes[3])));
+                LinkedList<MultiElse> t1 = new LinkedList<MultiElse>(evalElseIf(ps.ChildNodes[4]));
+                foreach (MultiElse item in t1)
+                {
+                    temporal.AddLast(item);
+                }
+                return temporal;
+            }
+            else
+            {
+                LinkedList<MultiElse> temporal = new LinkedList<MultiElse>();
+                temporal.AddLast(new MultiElse(evalOpr(ps.ChildNodes[2]), evalBloque(ps.ChildNodes[3])));
+                return temporal;
+            }
+
+            return null;
+        }
+
 
         public LinkedList<Instruccion> evalBloque(ParseTreeNode ps)
         {
@@ -697,13 +806,17 @@ namespace CompiPascal.Analizador
                 {
                     return new Operacion(evalOpr(ps.ChildNodes[0]), evalOpr(ps.ChildNodes[2]), Operacion.Tipo_operacion.MENOR_QUE);
                 }
-                else if (opr_tipo == "and")
+                else if (opr_tipo == "AND")
                 {
                     return new Operacion(evalOpr(ps.ChildNodes[0]), evalOpr(ps.ChildNodes[2]), Operacion.Tipo_operacion.YY);
                 }
-                else if (opr_tipo == "or")
+                else if (opr_tipo == "OR")
                 {
                     return new Operacion(evalOpr(ps.ChildNodes[0]), evalOpr(ps.ChildNodes[2]), Operacion.Tipo_operacion.OO);
+                }
+                else if (opr_tipo == "=")
+                {
+                    return new Operacion(evalOpr(ps.ChildNodes[0]), evalOpr(ps.ChildNodes[2]), Operacion.Tipo_operacion.EQUIVALENCIA);
                 }
 
             }
@@ -711,6 +824,12 @@ namespace CompiPascal.Analizador
             {
                 //mayor igual, menor igual, igual igual
                 string opr_tipo = ps.ChildNodes[1].Term.Name;
+                string op2 = ps.ChildNodes[2].Term.Name;
+
+                if (opr_tipo == "<" && op2 == ">")
+                {
+                    return new Operacion(evalOpr(ps.ChildNodes[0]), evalOpr(ps.ChildNodes[3]), Operacion.Tipo_operacion.DIFERENCIA);
+                }
 
                 if (opr_tipo == ">")
                 {
@@ -720,17 +839,14 @@ namespace CompiPascal.Analizador
                 {
                     return new Operacion(evalOpr(ps.ChildNodes[0]), evalOpr(ps.ChildNodes[3]), Operacion.Tipo_operacion.MENOR_I);
                 }
-                else if (opr_tipo == "=")
-                {
-                    return new Operacion(evalOpr(ps.ChildNodes[0]), evalOpr(ps.ChildNodes[3]), Operacion.Tipo_operacion.EQUIVALENCIA);
-                }
+                
 
             }
             else if (ps.ChildNodes.Count == 2)
             {
                 //dos, negacion o negativo
                 string opr_tipo = ps.ChildNodes[0].Term.Name;
-                if (opr_tipo == "!")
+                if (opr_tipo == "not")
                 {
                     return new Operacion(evalOpr(ps.ChildNodes[1]), null, Operacion.Tipo_operacion.NEGACION);
                 } 
@@ -813,21 +929,7 @@ namespace CompiPascal.Analizador
 
 
  
-        public void evalDeclaracion()
-        {
-
-        }
-
-        public void evalProcedimiento()
-        {
-
-        }
-
-        public void evalMain()
-        {
-
-        }
-
+       
 
 
 

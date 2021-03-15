@@ -42,6 +42,7 @@ namespace CompiPascal.Instrucciones
 
                     foreach (string t in nombres)
                     {
+                        Maestro.Instance.agrgarSimbolo(t, ex.Tipo.ToString(), linea.ToString(), columna.ToString());
                         ts.agregar(t, ex);
                     }
                 }
@@ -51,6 +52,7 @@ namespace CompiPascal.Instrucciones
 
                     foreach (string t in nombres)
                     {
+                        Maestro.Instance.agrgarSimbolo(t, ex.Tipo.ToString(), linea.ToString(), columna.ToString());
                         ts.agregar(t, ex);
                     }
                 }
@@ -60,6 +62,7 @@ namespace CompiPascal.Instrucciones
 
                     foreach (string t in nombres)
                     {
+                        Maestro.Instance.agrgarSimbolo(t, ex.Tipo.ToString(), linea.ToString(), columna.ToString());
                         ts.agregar(t, ex);
                     }
                 }
@@ -69,6 +72,7 @@ namespace CompiPascal.Instrucciones
 
                     foreach (string t in nombres)
                     {
+                        Maestro.Instance.agrgarSimbolo(t, ex.Tipo.ToString(), linea.ToString(), columna.ToString());
                         ts.agregar(t, ex);
                     }
                 }
@@ -92,6 +96,7 @@ namespace CompiPascal.Instrucciones
 
                     foreach (string t in nombres)
                     {
+                        Maestro.Instance.agrgarSimbolo(t, ex.Tipo.ToString(), linea.ToString(), columna.ToString());
                         ts.agregar(t, ex);
                     }
                 }
@@ -103,10 +108,11 @@ namespace CompiPascal.Instrucciones
                     }
 
 
-                    Simbolo ex = new Simbolo(nombre, tip, new Primitivo(Primitivo.tipo_val.CADENA, (object)Convert.ToInt32(valor.valor)));
+                    Simbolo ex = new Simbolo(nombre, tip, new Primitivo(Primitivo.tipo_val.INT, (object)Convert.ToInt32(valor.valor)));
 
                     foreach (string t in nombres)
                     {
+                        Maestro.Instance.agrgarSimbolo(t, ex.Tipo.ToString(), linea.ToString(), columna.ToString());
                         ts.agregar(t, ex);
                     }
                 }
@@ -118,10 +124,11 @@ namespace CompiPascal.Instrucciones
                     }
 
 
-                    Simbolo ex = new Simbolo(nombre, tip, new Primitivo(Primitivo.tipo_val.CADENA, (object)Convert.ToDouble(valor.valor)));
+                    Simbolo ex = new Simbolo(nombre, tip, new Primitivo(Primitivo.tipo_val.DECIMAL, (object)Convert.ToDouble(valor.valor)));
 
                     foreach (string t in nombres)
                     {
+                        Maestro.Instance.agrgarSimbolo(t, ex.Tipo.ToString(), linea.ToString(), columna.ToString());
                         ts.agregar(t, ex);
                     }
                 }
@@ -133,10 +140,11 @@ namespace CompiPascal.Instrucciones
                     }
 
 
-                    Simbolo ex = new Simbolo(nombre, tip, new Primitivo(Primitivo.tipo_val.CADENA, (object)Convert.ToBoolean(valor.valor)));
+                    Simbolo ex = new Simbolo(nombre, tip, new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)Convert.ToBoolean(valor.valor)));
 
                     foreach (string t in nombres)
                     {
+                        Maestro.Instance.agrgarSimbolo(t, ex.Tipo.ToString(), linea.ToString(), columna.ToString());
                         ts.agregar(t, ex);
                     }
                 }

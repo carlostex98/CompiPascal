@@ -21,6 +21,9 @@ namespace CompiPascal.General
 
         private Dictionary<string, FuncionDato> Funciones = new Dictionary<string, FuncionDato>();
 
+        public LinkedList<string[]> graficar = new LinkedList<string[]>();
+        public LinkedList<string[]> simbolos = new LinkedList<string[]>();
+
         static Maestro() { }
         private Maestro() { }
         public static Maestro Instance
@@ -30,6 +33,42 @@ namespace CompiPascal.General
                 return instance;
             }
         }
+
+        public LinkedList<string[]> obtenerGrafica()
+        {
+            return this.graficar;
+        }
+
+        public LinkedList<string[]> obtenerSimbolos()
+        {
+            return this.simbolos;
+        }
+
+        public void agrgarSimbolo(string a, string b, string c, string d)
+        {
+
+            string[] e = { a, b, c, d };
+
+            this.simbolos.AddLast(e);
+        }
+
+
+        public void separarGrafica()
+        {
+
+            string[] e = { "--", "--", "--" };
+
+            this.graficar.AddLast(e);
+        }
+
+        public void agragarGrafica(string a, string b, string c)
+        {
+
+            string[] e = { a, b, c };
+
+            this.graficar.AddLast(e);
+        }
+
 
         public void addError(Error error)
         {
@@ -82,6 +121,8 @@ namespace CompiPascal.General
             this.contador = 0;
             this.errores = new LinkedList<Error>();
             this.Funciones = new Dictionary<string, FuncionDato>();
+            this.graficar = new LinkedList<string[]>();
+            this.simbolos = new LinkedList<string[]>();
         }
 
         private void getDot(ParseTreeNode raiz)

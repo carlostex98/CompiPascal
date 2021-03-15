@@ -14,9 +14,9 @@ namespace CompiPascal.General
         }
 
 
-        private int linea, columna;
-        private string descripcion, ambito;
-        private Tipo_error tipo_;
+        public int linea, columna;
+        public string descripcion, ambito;  
+        public Tipo_error tipo_;
 
 
         public Error(int linea, int columna, string descripcion, Tipo_error tipo_)

@@ -31,7 +31,8 @@ namespace CompiPascal.Instrucciones
             MODULO,
             EQUIVALENCIA,
             ACCESO,
-            FUNCION_RETORNO
+            FUNCION_RETORNO,
+            DIFERENCIA
         }
 
         private Tipo_operacion tipo;
@@ -309,7 +310,64 @@ namespace CompiPascal.Instrucciones
             else if (tipo == Tipo_operacion.EQUIVALENCIA)
             {
                 //esto no tira error :)
-                return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)(a.valor.Equals(b.valor)));
+                if (a.t_val != b.t_val)
+                {
+                    return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)(false));
+                }
+                else
+                {
+                    //numero, cadena, booleano
+                    if (a.t_val == Primitivo.tipo_val.CADENA)
+                    {
+                        bool xc = Convert.ToString(a.valor) == Convert.ToString(b.valor);
+                        return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)(xc));
+                    }
+
+                    if (a.t_val == Primitivo.tipo_val.INT || a.t_val == Primitivo.tipo_val.DECIMAL)
+                    {
+                        bool xc = Convert.ToDouble(a.valor) == Convert.ToDouble(b.valor);
+                        return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)(xc));
+                    }
+
+                    if (a.t_val == Primitivo.tipo_val.BOOLEANO)
+                    {
+                        bool xc = Convert.ToBoolean(a.valor) == Convert.ToBoolean(b.valor);
+                        return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)(xc));
+                    }
+
+                }
+
+            }
+            else if (tipo == Tipo_operacion.DIFERENCIA)
+            {
+                //esto no tira error :)
+                if (a.t_val != b.t_val)
+                {
+                    return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)(true));
+                }
+                else
+                {
+                    //numero, cadena, booleano
+                    if (a.t_val == Primitivo.tipo_val.CADENA)
+                    {
+                        bool xc = Convert.ToString(a.valor) != Convert.ToString(b.valor);
+                        return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)(xc));
+                    }
+
+                    if (a.t_val == Primitivo.tipo_val.INT || a.t_val == Primitivo.tipo_val.DECIMAL)
+                    {
+                        bool xc = Convert.ToDouble(a.valor) != Convert.ToDouble(b.valor);
+                        return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)(xc));
+                    }
+
+                    if (a.t_val == Primitivo.tipo_val.BOOLEANO)
+                    {
+                        bool xc = Convert.ToBoolean(a.valor) != Convert.ToBoolean(b.valor);
+                        return new Primitivo(Primitivo.tipo_val.BOOLEANO, (object)(xc));
+                    }
+
+                }
+
             }
             else if (tipo == Tipo_operacion.PRIMITIVO)
             {
@@ -323,6 +381,9 @@ namespace CompiPascal.Instrucciones
             {
                 return null;
             }
+
+            return null;
+
         }
 
     }

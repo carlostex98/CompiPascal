@@ -23,6 +23,7 @@ namespace CompiPascal.TablaSimbolos
             if (!this.variables.ContainsKey(nombre))
             {
                 this.variables.Add(nombre, sb);
+                
                 return true;
             }
             return false;
@@ -66,7 +67,8 @@ namespace CompiPascal.TablaSimbolos
             if (this.variables.ContainsKey(nombre))
             {
                 Simbolo obj;
-                this.variables.TryGetValue(nombre, out obj);
+                //this.variables.TryGetValue(nombre, out obj);
+                obj = variables[nombre];
                 return obj;
             }
             else
@@ -78,7 +80,7 @@ namespace CompiPascal.TablaSimbolos
                     if (aux.variables.ContainsKey(nombre))
                     {
                         Simbolo obj;
-                        aux.variables.TryGetValue(nombre, out obj);
+                        obj = aux.variables[nombre];
                         return obj;
                     }
                     aux = aux.heredado;
@@ -94,6 +96,10 @@ namespace CompiPascal.TablaSimbolos
         {
             //verificamos que exista, de lo contrario retorna false
             //todo: varificar que sean del mismo tipo
+            //System.Diagnostics.Debug.WriteLine(nombre);
+            //System.Diagnostics.Debug.WriteLine(sb.valor);
+            //System.Diagnostics.Debug.WriteLine("-----+");
+
 
             if (this.variables.ContainsKey(nombre))
             {
@@ -106,7 +112,7 @@ namespace CompiPascal.TablaSimbolos
                     //variable no definida
 
                 }
-
+                
                 s.setValor(sb);
                 this.variables[nombre] = s;
                 return true;
