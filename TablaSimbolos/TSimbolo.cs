@@ -63,7 +63,7 @@ namespace CompiPascal.TablaSimbolos
 
 
         public Simbolo obtener(string nombre)
-        {
+        { 
             if (this.variables.ContainsKey(nombre))
             {
                 Simbolo obj;
@@ -113,8 +113,9 @@ namespace CompiPascal.TablaSimbolos
 
                 }
                 
-                s.setValor(sb);
-                this.variables[nombre] = s;
+                //s.setValor(sb);
+                Simbolo mm = new Simbolo(nombre, s.Tipo, sb);
+                this.variables[nombre] = mm;
                 return true;
             }
             else
@@ -128,8 +129,10 @@ namespace CompiPascal.TablaSimbolos
                         //aux.variables[nombre] = sb;
                         Simbolo s;
                         aux.variables.TryGetValue(nombre, out s);
-                        s.setValor(sb);
-                        aux.variables[nombre] = s;
+                        //s.setValor(sb);
+                        Simbolo mm = new Simbolo(nombre, s.Tipo, sb);
+                   
+                        aux.variables[nombre] = mm;
                         return true;
                     }
                     aux = aux.heredado;

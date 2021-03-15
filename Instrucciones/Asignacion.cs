@@ -19,13 +19,13 @@ namespace CompiPascal.Instrucciones
             this.id = a;
             this.valor = b;
             this.linea = ln;
-            this.columna = cl;
+            this.columna = cl; 
         }
 
         public Object ejecutar(TSimbolo ts)
         {
             Primitivo e = (Primitivo)valor.ejecutar(ts);
-            //System.Diagnostics.Debug.WriteLine(e.valor);
+            
 
             Simbolo s = ts.obtener(id);
 
@@ -76,6 +76,7 @@ namespace CompiPascal.Instrucciones
                 bool x = ts.esEspecial(id);
 
                 ts.redefinir(id, e);
+                Simbolo xd = ts.obtener(id);
                 //System.Diagnostics.Debug.WriteLine(e.valor);
                 
 

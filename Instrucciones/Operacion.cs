@@ -139,6 +139,11 @@ namespace CompiPascal.Instrucciones
                     throw new Error(0, 0, "Operador no numerico: " + Convert.ToString(b.valor), Error.Tipo_error.SEMANTICO);
                 }
 
+                if (Convert.ToDouble(b.valor) == Convert.ToDouble(0))
+                {
+                    throw new Error(0,0, "no se puede dividir entre cero", Error.Tipo_error.SEMANTICO);
+                }
+
                 return new Primitivo(Primitivo.tipo_val.INT, (object)(Convert.ToDouble(a.valor) / Convert.ToDouble(b.valor)));
             }
             else if (tipo == Tipo_operacion.MULTIPLICACION)

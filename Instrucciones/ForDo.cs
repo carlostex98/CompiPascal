@@ -26,11 +26,11 @@ namespace CompiPascal.Instrucciones
 
         public Object ejecutar(TSimbolo ts)
         {
-            TSimbolo tablaLocal = new TSimbolo(ts);
+            //TSimbolo tablaLocal = new TSimbolo(ts);
 
             string nomb_var = inicio.id; //variable para el aumento
-            inicio.ejecutar(tablaLocal);
-            Primitivo p = (Primitivo)val_limite.ejecutar(tablaLocal);
+            inicio.ejecutar(ts);
+            Primitivo p = (Primitivo)val_limite.ejecutar(ts);
             double b = Convert.ToDouble(p.valor);
 
             Simbolo x = ts.obtener(nomb_var);
@@ -40,11 +40,14 @@ namespace CompiPascal.Instrucciones
             bool br = false;
             //bool ct = false;
 
+            
 
-            while (a!=b)
+            while (a<=b)
             {
+                TSimbolo tablaLocal = new TSimbolo(ts);
                 foreach (Instruccion t in listaInstrucciones)
                 {
+
                     Retorno r = (Retorno)t.ejecutar(tablaLocal);
                     if (r != null)
                     {

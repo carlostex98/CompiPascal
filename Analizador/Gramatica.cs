@@ -236,7 +236,7 @@ namespace CompiPascal.Analizador
                 ;
 
 
-            main_.Rule = begin_ + lista_instr + end_ + ptcoma;
+            main_.Rule = begin_ + lista_instr + end_ + punto;
 
 
 

@@ -42,6 +42,7 @@ namespace CompiPascal.Instrucciones
                         else if (r.t_val == Retorno.tipoRetorno.BREAK)
                         {
                             br = true;
+                            return null;
                             break;
                         }
                         else if (r.t_val == Retorno.tipoRetorno.CONTINUE)

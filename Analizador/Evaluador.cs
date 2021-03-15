@@ -107,26 +107,7 @@ namespace CompiPascal.Analizador
         {
             this.getDot(raiz);
             await File.WriteAllTextAsync("C:\\compiladores2\\AST.txt", this.grafo);
-            using (Process p = new Process())
-            {
-                // set start info
-                p.StartInfo = new ProcessStartInfo("cmd.exe")
-                {
-                    RedirectStandardInput = true,
-                    UseShellExecute = false,
-                    WorkingDirectory = @"C:\"
-                };
-                // event handlers for output & error
-                //p.OutputDataReceived += p_OutputDataReceived;
-                //p.ErrorDataReceived += p_ErrorDataReceived;
-
-                // start process
-                p.Start();
-                // send command to its input
-                p.StandardInput.Write("dot -Tpng AST.txt -o outfile.png");
-                //wait
-                p.WaitForExit();
-            }
+            
         }
 
 
