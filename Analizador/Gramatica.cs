@@ -21,9 +21,9 @@ namespace CompiPascal.Analizador
             var numero = new NumberLiteral("numero");
             var identificador = new IdentifierTerminal("identificador");
             var cadena = new StringLiteral("cadena", "\'");
-            var comentario_uno= new CommentTerminal("comentario_uno", "//", "\n", "\r\n");
-            var comentario_multi = new CommentTerminal("comentario_multi", "(*", "*)");
-            var comentario_multi_ = new CommentTerminal("comentario_multi", "{", "}");
+            CommentTerminal comentario_uno= new CommentTerminal("comentario_uno", "//", "\n", "\r\n");
+            CommentTerminal comentario_multi = new CommentTerminal("comentario_multi", "(*", "*)");
+            CommentTerminal comentario_multi_ = new CommentTerminal("comentario_multi_", "{", "}");
             #endregion
 
             #region Terminales
@@ -105,6 +105,11 @@ namespace CompiPascal.Analizador
 
             RegisterOperators(1, mas, menos);
             RegisterOperators(2, por, dividir);
+            RegisterOperators(2, and_, or_);
+
+            NonGrammarTerminals.Add(comentario_uno);
+            NonGrammarTerminals.Add(comentario_multi);
+            NonGrammarTerminals.Add(comentario_multi_);
 
             #endregion
 
@@ -383,9 +388,9 @@ namespace CompiPascal.Analizador
 
 
             #region CONFIG
-            NonGrammarTerminals.Add(comentario_uno);
-            NonGrammarTerminals.Add(comentario_multi);
-            NonGrammarTerminals.Add(comentario_multi_);
+            //NonGrammarTerminals.Add(comentario_uno);
+            //NonGrammarTerminals.Add(comentario_multi);
+            //NonGrammarTerminals.Add(comentario_multi_);
             this.Root = inicio;
             #endregion
 
